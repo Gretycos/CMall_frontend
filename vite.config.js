@@ -11,7 +11,7 @@ export default defineConfig({
   },
   plugins: [
       vue(),
-      Components({ resolvers: [VantResolver()] })
+      Components({ resolvers: [VantResolver()] }) // UI库自动按需引入
   ],
   resolve: {
     alias: {
