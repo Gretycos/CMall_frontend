@@ -19,7 +19,7 @@
 import { reactive, onMounted } from 'vue'
 import md5 from 'js-md5'
 import sHeader from '@/components/SimpleHeader.vue'
-import { getUserInfo, EditUserInfo, logout } from '@/service/user'
+import { getUserInfo, editUserInfo, logout } from '@/service/user'
 import { setLocal } from '@/common/js/utils'
 import { showSuccessToast } from 'vant'
 const state = reactive({
@@ -42,7 +42,7 @@ const save = async () => {
     if (state.password) {
         params.passwordMd5 = md5(state.password)
     }
-    await EditUserInfo(params)
+    await editUserInfo(params)
     showSuccessToast('保存成功')
 }
 

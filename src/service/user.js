@@ -8,8 +8,12 @@ export function getUserInfo() {
     return axios.get('/user/info');
 }
 
-export function EditUserInfo(params) {
+export function editUserInfo(params) {
     return axios.put('/user/info', params);
+}
+
+export function editUserPassword(params) {
+    return axios.put('/user/password', params);
 }
 
 export function login(params) {

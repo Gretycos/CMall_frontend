@@ -4,7 +4,11 @@
  */
 import axios from "@/common/js/axios"
 export function createOrder(params) {
-    return axios.post('/saveOrder', params);
+    return axios.post('/order/save', params);
+}
+
+export function createSeckillOrder(params) {
+    return axios.post('/order/seckill/save', params);
 }
 
 export function getOrderList(params) {
@@ -16,11 +20,11 @@ export function getOrderDetail(id) {
 }
 
 export function cancelOrder(id) {
-    return axios.put(`/order/${id}/cancel`);
+    return axios.put(`/order/cancel/${id}`);
 }
 
 export function confirmOrder(id) {
-    return axios.put(`/order/${id}/finish`)
+    return axios.put(`/order/finish/${id}`)
 }
 
 export function payOrder(params) {

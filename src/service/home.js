@@ -5,5 +5,5 @@
 import axios from "@/common/js/axios"
 
 export function getHomePage() {
-    return axios.get('/index-infos');
+    return axios.get('/homepage');
 }
