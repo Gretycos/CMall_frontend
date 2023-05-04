@@ -4226,7 +4226,7 @@ tdist.getLev1 = function() {
 }
 
 tdist.getLev2 = function(t) {
-    if ("" == t)
+    if ("" === t)
         return [];
     for (var e = [], i = 1; i < 100; i++) {
         var n = t.substr(0, 2);
@@ -4241,7 +4241,7 @@ tdist.getLev2 = function(t) {
 }
 
 tdist.getLev3 = function(t) {
-    if ("" == t)
+    if ("" === t)
         return [];
     for (var e = [], i = 1; i < 100; i++) {
         var n = t.substr(0, 4);

@@ -52,13 +52,13 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { search } from '@/service/good'
+import { search } from '@/service/goods'
 const route = useRoute()
 const router = useRouter()
 const state = reactive({
     keyword: route.query.keyword || '',
     searchBtn: false,
-    seclectActive: false,
+    selectActive: false,
     refreshing: false,
     list: [],
     loading: false,
