@@ -11,6 +11,10 @@ export const setLocal = (name, value) => {
     localStorage.setItem(name, value)
 }
 
+export const removeLocal = (name) => {
+    localStorage.removeItem(name)
+}
+
 export const tdist = {
     210184: ["沈北新区", "210100"],
     210185: ["其它区", "210100"],
@@ -4253,4 +4257,13 @@ tdist.getLev3 = function(t) {
         })
     }
     return e
+}
+
+export const prefix = (url) => {
+    if (url && url.startsWith('http')) {
+        return url
+    } else {
+        url = `http://127.0.0.1:8080${url}`
+        return url
+    }
 }

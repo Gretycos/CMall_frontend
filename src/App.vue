@@ -1,3 +1,9 @@
+<template>
+    <div id="app">
+        <RouterView />
+    </div>
+</template>
+
 <script setup>
 import { reactive } from 'vue'
 import { useRouter, RouterView } from 'vue-router'
@@ -17,17 +23,10 @@ router.beforeEach((to, from) => {
 })
 </script>
 
-<template>
-  <div id="app">
-    <RouterView />
-  </div>
-</template>
-
 <style lang="less">
 html, body {
   height: 100%;
   overflow-x: hidden;
-  overflow-y: scroll;
 }
 #app {
   height: 100%;
@@ -35,7 +34,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   // text-align: center;
-  color: #2c3e50;
+  //color: #2c3e50;
 }
 
 .router-view{

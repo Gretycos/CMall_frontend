@@ -46,7 +46,7 @@
 import { reactive, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
-import { getDetail } from '@/service/good'
+import { getDetail } from '@/service/goods'
 import { addCart } from '@/service/cart'
 import sHeader from '@/components/SimpleHeader.vue'
 import { showSuccessToast } from 'vant'
@@ -66,7 +66,7 @@ onMounted(async () => {
     const { data } = await getDetail(id)
     data.goodsCarouselList = data.goodsCarouselList.map(i => prefix(i))
     state.detail = data
-    cart.updateCart()
+    await cart.updateCart()
 })
 
 nextTick(() => {
@@ -85,13 +85,13 @@ const goTo = () => {
 
 const handleAddCart = async () => {
     const { resultCode } = await addCart({ goodsCount: 1, goodsId: state.detail.goodsId })
-    if (resultCode == 200 ) showSuccessToast('添加成功')
-    cart.updateCart()
+    if (resultCode === 200 ) showSuccessToast('添加成功')
+    await cart.updateCart()
 }
 
 const goToCart = async () => {
     await addCart({ goodsCount: 1, goodsId: state.detail.goodsId })
-    cart.updateCart()
+    await cart.updateCart()
     router.push({ path: '/cart' })
 }
 

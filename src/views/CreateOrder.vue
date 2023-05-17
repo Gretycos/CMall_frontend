@@ -15,24 +15,29 @@
             </div>
             <van-icon class="arrow" name="arrow" />
         </div>
-        <div class="good">
-            <div class="good-item" v-for="(item, index) in state.cartList" :key="index">
-                <div class="good-img"><img :src="$filters.prefix(item.goodsCoverImg)" alt=""></div>
-                <div class="good-desc">
-                    <div class="good-title">
+        <div class="goods">
+            <div class="goods-item" v-for="(item, index) in state.cartList" :key="index">
+                <div class="good-img"><img :src="prefix(item.goodsCoverImg)" alt=""></div>
+                <div class="goods-desc">
+                    <div class="goods-title">
                         <span>{{ item.goodsName }}</span>
                         <span>x{{ item.goodsCount }}</span>
                     </div>
-                    <div class="good-btn">
+                    <div class="goods-btn">
                         <div class="price">¥{{ item.sellingPrice }}</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="pay-wrap">
+            <van-coupon-cell
+                :coupons="state.couponList"
+                :chosen-coupon="state.chosenCoupon"
+                @click="state.showCouponList = true"
+            />
             <div class="price">
                 <span>商品金额</span>
-                <span>¥{{ total }}</span>
+                <span class="price-num">¥{{ total }}</span>
             </div>
             <van-button @click="handleCreateOrder" class="pay-btn" color="#1baeae" type="primary" block>生成订单</van-button>
         </div>
@@ -49,26 +54,42 @@
                 <van-button color="#4fc08d" block @click="handlePayOrder(2)">微信支付</van-button>
             </div>
         </van-popup>
+        <van-popup
+            v-model:show="state.showCouponList"
+            position="bottom"
+            style="height: 80%; padding-top: 10px;"
+        >
+            <van-coupon-list
+                :coupons="state.couponList"
+                :chosen-coupon="state.chosenCoupon"
+                @change="handleCouponChange"
+                @exchange="handleCouponExchange"
+            />
+        </van-popup>
     </div>
 </template>
 
 <script setup>
-import { reactive, onMounted, computed } from 'vue'
+import {computed, onMounted, reactive} from 'vue'
 import sHeader from '@/components/SimpleHeader.vue'
-import { getByCartItemIds } from '@/service/cart'
-import { getDefaultAddress, getAddressDetail } from '@/service/address'
-import { createOrder, payOrder } from '@/service/order'
-import { setLocal, getLocal } from '@/common/js/utils'
-import { showLoadingToast, closeToast, showSuccessToast } from 'vant'
-import { useRoute, useRouter } from 'vue-router'
+import {getByCartItemIds} from '@/service/cart'
+import {getAddressDetail, getDefaultAddress} from '@/service/address'
+import {createOrder, payOrder} from '@/service/order'
+import {getLocal, prefix, removeLocal, setLocal} from '@/common/js/utils'
+import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
+import {useRoute, useRouter} from 'vue-router'
+
 const router = useRouter()
 const route = useRoute()
 const state = reactive({
     cartList: [],
     address: {},
     showPay: false,
+    showCouponList: false,
     orderNo: '',
-    cartItemIds: []
+    cartItemIds: [],
+    couponList: [],
+    chosenCoupon: -1
 })
 
 onMounted(() => {
@@ -79,35 +100,75 @@ const init = async () => {
     showLoadingToast({ message: '加载中...', forbidClick: true });
     const { addressId, cartItemIds } = route.query
     const _cartItemIds = cartItemIds ? JSON.parse(cartItemIds) : JSON.parse(getLocal('cartItemIds'))
-    setLocal('cartItemIds', JSON.stringify(_cartItemIds))
-    const { data: list } = await getByCartItemIds({ cartItemIds: _cartItemIds.join(',') })
-    const { data: address } = addressId ? await getAddressDetail(addressId) : await getDefaultAddress()
+    setLocal('cartItemIds', cartItemIds)
+    const { data: {itemsForConfirmPage, myCouponVOList}} = await getByCartItemIds({ cartItemIds: _cartItemIds })
+    state.cartList = itemsForConfirmPage
+    state.couponList = myCouponVOList.map(e => {
+        return {
+            id: e.couponId,
+            couponUserId: e.couponUserId,
+            name: e.couponName,
+            condition: e.couponDesc,
+            description: parseGoodsType(e.goodsType) + e.goodsValue,
+            value: e.discount * 100,
+            valueDesc: e.discount,
+            unitDesc: '元',
+            startAt: new Date(e.startTime).getTime() / 1000,
+            endAt: new Date(e.endTime).getTime() / 1000
+        }
+    })
+    const { data: address} = addressId ? await getAddressDetail(addressId) : await getDefaultAddress()
     if (!address) {
         router.push({ path: '/address' })
         return
     }
-    state.cartList = list
     state.address = address
     closeToast()
 }
+
+const parseGoodsType = (type) => {
+    return type === 0? '全场通用' : type === 1 ? '类型限制: ' : '商品限制: '
+}
+
 
 const goTo = () => {
     router.push({ path: '/address', query: { cartItemIds: JSON.stringify(state.cartItemIds), from: 'create-order' }})
 }
 
 const deleteLocal = () => {
-    setLocal('cartItemIds', '')
+    removeLocal('cartItemIds')
+}
+
+const handleCouponChange = (index) => {
+    state.showCouponList = false
+    state.chosenCoupon = index
+}
+
+const handleCouponExchange = (code) => {
+    console.log(code)
 }
 
 const handleCreateOrder = async () => {
-    const params = {
+    showLoadingToast({
+        message: '创建订单中...',
+        forbidClick: true,
+        onClose:()=>{
+            state.showPay = true
+        }
+    })
+    let params = {
         addressId: state.address.addressId,
         cartItemIds: state.cartList.map(item => item.cartItemId)
     }
+    if (state.chosenCoupon !== -1){
+        params.couponUserId = state.couponList[state.chosenCoupon].couponUserId
+    }
     const { data } = await createOrder(params)
-    setLocal('cartItemIds', '')
+    removeLocal('cartItemIds')
     state.orderNo = data
-    state.showPay = true
+    setTimeout(() => {
+        closeToast()
+    }, 2000)
 }
 
 const close = () => {
@@ -127,7 +188,8 @@ const total = computed(() => {
     state.cartList.forEach(item => {
         sum += item.goodsCount * item.sellingPrice
     })
-    return sum
+    let discount = state.chosenCoupon === -1 ? 0 : state.couponList[state.chosenCoupon].value / 100
+    return sum - discount
 })
 </script>
 
@@ -164,10 +226,10 @@ const total = computed(() => {
       content: '';
     }
   }
-  .good {
+  .goods {
     margin-bottom: 120px;
   }
-  .good-item {
+  .goods-item {
     padding: 10px;
     background: #fff;
     display: flex;
@@ -176,17 +238,17 @@ const total = computed(() => {
         .wh(100px, 100px)
       }
     }
-    .good-desc {
+    .goods-desc {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       flex: 1;
       padding: 20px;
-      .good-title {
+      .goods-title {
         display: flex;
         justify-content: space-between;
       }
-      .good-btn {
+      .goods-btn {
         display: flex;
         justify-content: space-between;
         .price {
@@ -216,7 +278,7 @@ const total = computed(() => {
       padding: 0 5%;
       margin: 10px 0;
       font-size: 14px;
-      span:nth-child(2) {
+      .price-num {
         color: red;
         font-size: 18px;
       }

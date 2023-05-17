@@ -7,7 +7,13 @@ import {VantResolver} from "unplugin-vue-components/resolvers"
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 8080
+    port: 8081,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8080', // 凡是遇到 /admin 路径的请求，都映射到 target 属性
+        changeOrigin: true,
+      }
+    }
   },
   plugins: [
       vue(),

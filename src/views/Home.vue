@@ -3,17 +3,20 @@ author: Tsong
 time: 2023/4/20 12:29
 -->
 <template>
-    <div>
+    <div class="home">
         <header class="home-header wrap" :class="{'active' : state.headerScroll}">
-            <router-link tag="i" to="./category"><i class="nbicon menu2"></i></router-link>
             <div class="header-search">
                 <span class="app-name">CMall</span>
-                <i class="iconfont icon-search"></i>
-                <router-link tag="span" class="search-title" to="./product-list?from=home">搜索商品</router-link>
+                <i class="icon-search">
+                    <van-icon name="search" />
+                </i>
+                <router-link tag="span" class="search-title" to="./product-list?from=home">
+                        搜索商品
+                </router-link>
             </div>
             <router-link class="login" tag="span" to="./login" v-if="!state.isLogin">登录</router-link>
             <router-link class="login" tag="span" to="./user" v-else>
-                <van-icon name="manager-o" />
+                <van-icon name="user-o" />
             </router-link>
         </header>
         <nav-bar />
@@ -24,13 +27,13 @@ time: 2023/4/20 12:29
                 <span>{{item.name}}</span>
             </div>
         </div>
-        <div class="good">
-            <header class="good-header">新品上线</header>
+        <div class="goods">
+            <header class="goods-header">新品上线</header>
             <van-skeleton title :row="3" :loading="state.loading">
-                <div class="good-box">
-                    <div class="good-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item)">
+                <div class="goods-box">
+                    <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item)">
                         <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
-                        <div class="good-desc">
+                        <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
                         </div>
@@ -38,13 +41,13 @@ time: 2023/4/20 12:29
                 </div>
             </van-skeleton>
         </div>
-        <div class="good">
-            <header class="good-header">热门商品</header>
+        <div class="goods">
+            <header class="goods-header">热门商品</header>
             <van-skeleton title :row="3" :loading="state.loading">
-                <div class="good-box">
-                    <div class="good-item" v-for="item in state.hotGoodsList" :key="item.goodsId" @click="goToDetail(item)">
+                <div class="goods-box">
+                    <div class="goods-item" v-for="item in state.hotGoodsList" :key="item.goodsId" @click="goToDetail(item)">
                         <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
-                        <div class="good-desc">
+                        <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
                         </div>
@@ -52,13 +55,13 @@ time: 2023/4/20 12:29
                 </div>
             </van-skeleton>
         </div>
-        <div class="good" :style="{ paddingBottom: '100px'}">
-            <header class="good-header">最新推荐</header>
+        <div class="goods" :style="{ paddingBottom: '100px'}">
+            <header class="goods-header">最新推荐</header>
             <van-skeleton title :row="3" :loading="state.loading">
-                <div class="good-box">
-                    <div class="good-item" v-for="item in state.recommendGoodsList" :key="item.goodsId" @click="goToDetail(item)">
+                <div class="goods-box">
+                    <div class="goods-item" v-for="item in state.recommendGoodsList" :key="item.goodsId" @click="goToDetail(item)">
                         <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
-                        <div class="good-desc">
+                        <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
                         </div>
@@ -139,7 +142,7 @@ onMounted(async () => {
     if (token) {
         state.isLogin = true
         // 获取购物车数据.
-        cart.updateCart()
+        await cart.updateCart()
     }
     showLoadingToast({
         message: '加载中...',
@@ -174,6 +177,9 @@ const tips = () => {
 
 <style lang="less" scoped >
 @import '../common/style/mixin';
+.home{
+    overflow-y: auto;
+}
 .home-header {
     position: fixed;
     left: 0;
@@ -223,11 +229,8 @@ const tips = () => {
             font-size: 12px;
             color: #666;
             line-height: 21px;
+            width: 100%;
         }
-    }
-    .icon-iconyonghu{
-        color: #fff;
-        font-size: 22px;
     }
     .login {
         color: @primary;
@@ -252,11 +255,12 @@ const tips = () => {
         img {
             .wh(36px, 36px);
             margin: 13px auto 8px auto;
+            cursor: pointer;
         }
     }
 }
-.good {
-    .good-header {
+.goods {
+    .goods-header {
         background: #f9f9f9;
         height: 50px;
         line-height: 50px;
@@ -265,11 +269,11 @@ const tips = () => {
         font-size: 16px;
         font-weight: 500;
     }
-    .good-box {
+    .goods-box {
         display: flex;
         justify-content: flex-start;
         flex-wrap: wrap;
-        .good-item {
+        .goods-item {
             box-sizing: border-box;
             width: 50%;
             border-bottom: 1PX solid #e9e9e9;
@@ -279,7 +283,7 @@ const tips = () => {
                 width: 120px;
                 margin: 0 auto;
             }
-            .good-desc {
+            .goods-desc {
                 text-align: center;
                 font-size: 14px;
                 padding: 10px 0;

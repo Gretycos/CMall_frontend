@@ -21,5 +21,5 @@ export function deleteCartItem(id) {
 }
 
 export function getByCartItemIds(params) {
-    return axios.get('/shopping-cart/confirm', { params });
+    return axios.post('/shopping-cart/confirm', params);
 }

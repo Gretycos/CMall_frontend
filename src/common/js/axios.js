@@ -4,16 +4,16 @@
  */
 import { showFailToast } from 'vant'
 import axios from 'axios'
-import { setLocal } from '@/common/js/utils'
+import { setLocal, getLocal } from '@/common/js/utils'
 import router from '@/router'
 
 
 console.log('import.meta.env', import.meta.env)
 
-axios.defaults.baseURL = import.meta.env.MODE === 'development' ? '127.0.0.1:8080/api' : ''
+axios.defaults.baseURL = import.meta.env.MODE === 'development' ? '/api' : ''
 axios.defaults.withCredentials = true
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
-axios.defaults.headers['token'] = localStorage.getItem('token') || ''
+axios.defaults.headers['token'] = getLocal('token') || ''
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 axios.interceptors.response.use(res => {
@@ -26,10 +26,10 @@ axios.interceptors.response.use(res => {
         if (res.data.resultCode === 416) {
             router.push({ path: '/login' })
         }
-        if (res.data.data && window.location.hash === '#/login') {
-            setLocal('token', res.data.data)
-            axios.defaults.headers['token'] = res.data.data
-        }
+        // if (res.data.data && window.location.hash === '#/login') {
+        //     setLocal('token', res.data.data)
+        //     axios.defaults.headers['token'] = res.data.data
+        // }
         return Promise.reject(res.data)
     }
 

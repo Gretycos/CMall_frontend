@@ -8,15 +8,15 @@
         <div class="cart-body">
             <van-checkbox-group @change="groupChange" v-model="state.result" ref="checkboxGroup">
                 <van-swipe-cell :right-width="50" v-for="(item, index) in state.list" :key="index">
-                    <div class="good-item">
+                    <div class="goods-item">
                         <van-checkbox :name="item.cartItemId" />
                         <div class="good-img"><img :src="$filters.prefix(item.goodsCoverImg)" alt=""></div>
-                        <div class="good-desc">
-                            <div class="good-title">
+                        <div class="goods-desc">
+                            <div class="goods-title">
                                 <span>{{ item.goodsName }}</span>
                                 <span>x{{ item.goodsCount }}</span>
                             </div>
-                            <div class="good-btn">
+                            <div class="goods-btn">
                                 <div class="price">¥{{ item.sellingPrice }}</div>
                                 <van-stepper
                                         integer
@@ -193,24 +193,24 @@ const checkAll = () => {
   .cart-body {
     margin: 16px 0 100px 0;
     padding-left: 10px;
-    .good-item {
+    .goods-item {
       display: flex;
       .good-img {
         img {
           .wh(100px, 100px)
         }
       }
-      .good-desc {
+      .goods-desc {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         flex: 1;
         padding: 20px;
-        .good-title {
+        .goods-title {
           display: flex;
           justify-content: space-between;
         }
-        .good-btn {
+        .goods-btn {
           display: flex;
           justify-content: space-between;
           .price {

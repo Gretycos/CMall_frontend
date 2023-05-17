@@ -53,6 +53,7 @@ const state = reactive({
 
 onMounted(async () => {
     const { data } = await getUserInfo()
+    console.log(data)
     state.user = data
     state.loading = false
 })
@@ -144,6 +145,7 @@ const goTo = (r, query) => {
       .van-icon-arrow {
         margin-top: 13px;
       }
+      cursor: pointer;
     }
   }
 }

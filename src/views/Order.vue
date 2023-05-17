@@ -14,7 +14,7 @@
             <van-tab title="交易完成" name="4"></van-tab>
         </van-tabs>
         <div class="content">
-            <van-pull-refresh v-model="state.refreshing" @refresh="onRefresh" class="order-list-refresh">
+            <van-pull-refresh :v-model="state.refreshing" @refresh="onRefresh" class="order-list-refresh">
                 <van-list
                         v-model:loading="state.loading"
                         :finished="state.finished"
@@ -28,13 +28,13 @@
                             <span>{{ item.orderStatusString }}</span>
                         </div>
                         <van-card
-                                v-for="one in item.newBeeMallOrderItemVOS"
+                                v-for="one in item.orderItemVOList"
                                 :key="one.orderId"
                                 :num="one.goodsCount"
                                 :price="one.sellingPrice"
                                 desc="全场包邮"
                                 :title="one.goodsName"
-                                :thumb="$filters.prefix(one.goodsCoverImg)"
+                                :thumb="prefix(one.goodsCoverImg)"
                         />
                     </div>
                 </van-list>
@@ -48,6 +48,7 @@ import { reactive } from 'vue';
 import sHeader from '@/components/SimpleHeader.vue'
 import { getOrderList } from '@/service/order'
 import { useRouter } from 'vue-router'
+import {prefix} from "@/common/js/utils.js";
 
 const router = useRouter()
 const state = reactive({

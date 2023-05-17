@@ -3,15 +3,20 @@
  time: 2023/4/22 23:38
 -->
 <template>
-    <div class="categray">
+    <div class="category">
         <div>
             <header class="category-header wrap van-hairline--bottom">
-                <i class="nbicon nbfanhui" @click="goHome"></i>
+                <i @click="goHome">
+                    <van-icon name="revoke" />
+                </i>
                 <div class="header-search">
-                    <i class="nbicon nbSearch"></i>
-                    <router-link tag="span" class="search-title" to="./product-list?from=category">全场50元起步</router-link>
+                    <i class="icon-search">
+                        <van-icon name="search" />
+                    </i>
+                    <router-link tag="span" class="search-title" to="./product-list?from=category">
+                        搜索商品
+                    </router-link>
                 </div>
-                <i class="iconfont icon-More"></i>
             </header>
             <nav-bar></nav-bar>
             <div class="search-wrap" ref="searchWrap">
@@ -33,11 +38,11 @@
                                 <template v-for="(category, index) in state.categoryData">
                                     <div class="swiper-slide" v-if="state.currentIndex === category.categoryId" :key="index">
                                         <!-- <img class="category-main-img" :src="category.mainImgUrl" v-if="category.mainImgUrl"/> -->
-                                        <div class="category-list" v-for="(products, index) in category.secondLevelCategoryVOS" :key="index">
-                                            <p class="catogory-title">{{products.categoryName}}</p>
-                                            <div class="product-item" v-for="(product, index) in products.thirdLevelCategoryVOS" :key="index" @click="selectProduct(product)">
-                                                <img src="//s.weituibao.com/1583591077131/%E5%88%86%E7%B1%BB.png" class="product-img"/>
-                                                <p v-text="product.categoryName" class="product-title"></p>
+                                        <div class="category-list" v-for="(cate2, index) in category.secondLevelCategoryVOList" :key="index">
+                                            <p class="category-title">{{cate2.categoryName}}</p>
+                                            <div class="product-item" v-for="(cate3, index) in cate2.thirdLevelCategoryVOList" :key="index" @click="selectProduct(cate3)">
+                                                <i><van-icon name="bag-o" size="40" /></i>
+                                                <p v-text="cate3.categoryName" class="product-title"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -56,7 +61,7 @@ import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import navBar from '@/components/NavBar.vue'
 import listScroll from '@/components/ListScroll.vue'
-import { getCategory } from "@/service/good"
+import { getCategory } from "@/service/goods"
 import { showLoadingToast, closeToast } from 'vant'
 const router = useRouter()
 // composition API 获取 refs 的形式
@@ -91,7 +96,8 @@ const selectProduct = (item) => {
 </script>
 <style lang="less" scoped>
 @import '../common/style/mixin';
-.categray {
+.category {
+   overflow-y: auto;
   .category-header {
     background: #fff;
     position: fixed;
@@ -115,25 +121,24 @@ const selectProduct = (item) => {
     .header-search {
       display: flex;
       width: 80%;
-      height: 20px;
-      line-height: 20px;
+      height: 30px;
+      line-height: 30px;
       margin: 10px 0;
       padding: 5px 0;
       color: #232326;
       background: #F7F7F7;
       border-radius: 20px;
-      .nbSearch {
-        padding: 0 10px 0 20px;
+      align-items: center;
+      .icon-search {
+        padding: 0 10px;
         font-size: 17px;
       }
       .search-title {
         font-size: 12px;
         color: #666;
         line-height: 21px;
+        width: 100%;
       }
-    }
-    .icon-More {
-      font-size: 20px;
     }
   }
 }
@@ -160,6 +165,7 @@ const selectProduct = (item) => {
           color: @primary;
           background: #fff;
         }
+        cursor: pointer;
       }
     }
   }
@@ -186,7 +192,7 @@ const selectProduct = (item) => {
           flex-wrap: wrap;
           flex-shrink: 0;
           width: 100%;
-          .catogory-title {
+          .category-title {
             width: 100%;
             font-size: 17px;
             font-weight: 500;

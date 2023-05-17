@@ -33,14 +33,14 @@
             </div>
         </div>
         <van-card
-                v-for="item in state.detail.newBeeMallOrderItemVOS"
+                v-for="item in state.detail.orderItemVOList"
                 :key="item.goodsId"
                 style="background: #fff"
                 :num="item.goodsCount"
                 :price="item.sellingPrice"
                 desc="全场包邮"
                 :title="item.goodsName"
-                :thumb="$filters.prefix(item.goodsCoverImg)"
+                :thumb="prefix(item.goodsCoverImg)"
         />
         <van-popup
                 v-model:show="state.showPay"
@@ -61,6 +61,7 @@ import sHeader from '@/components/SimpleHeader.vue'
 import { getOrderDetail, cancelOrder, confirmOrder, payOrder } from '@/service/order'
 import { showConfirmDialog, showLoadingToast, closeToast, showSuccessToast, closeDialog } from 'vant'
 import { useRoute } from 'vue-router'
+import {prefix} from "@/common/js/utils.js";
 const route = useRoute()
 const state = reactive({
     detail: {},

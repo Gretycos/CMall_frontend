@@ -6,13 +6,14 @@
     <div class="product-list-wrap">
         <div class="product-list-content">
             <header class="category-header wrap">
-                <i class="nbicon nbfanhui" @click="goBack"></i>
+                <i @click="goBack">
+                    <van-icon name="revoke" />
+                </i>
                 <div class="header-search">
-                    <i class="nbicon nbSearch"></i>
-                    <input
-                            type="text"
-                            class="search-title"
-                            v-model="state.keyword"/>
+                    <i class="icon-search">
+                        <van-icon name="search" />
+                    </i>
+                    <input type="text" class="search-title" v-model="state.keyword"/>
                 </div>
                 <span class="search-btn" @click="getSearch">搜索</span>
             </header>
@@ -23,7 +24,7 @@
             </van-tabs>
         </div>
         <div class="content">
-            <van-pull-refresh v-model="state.refreshing" @refresh="onRefresh" class="product-list-refresh">
+            <van-pull-refresh :v-model="state.refreshing" @refresh="onRefresh" class="product-list-refresh">
                 <van-list
                         v-model:loading="state.loading"
                         :finished="state.finished"
@@ -155,8 +156,9 @@ const changeTab = ({ name }) => {
       padding: 5px 0;
       color: #232326;
       background: #F7F7F7;
+      align-items: center;
       .borderRadius(20px);
-      .nbSearch {
+      .icon-search {
         padding: 0 5px 0 20px;
         font-size: 17px;
       }

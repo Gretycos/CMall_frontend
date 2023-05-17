@@ -3,7 +3,7 @@
  time: 2023/4/22 16:28
 -->
 <template>
-    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="#1baeae">
+    <van-swipe class="my-swiper" :autoplay="3000" indicator-color="#1baeae">
         <van-swipe-item v-for="(item, index) in list" :key="index">
             <img :src="item.carouselUrl" alt="" @click="goTo(item.redirectUrl)">
         </van-swipe-item>
@@ -24,10 +24,11 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.my-swipe {
-  img {
-    width: 100%;
-    height: 100%;
-  }
+.my-swiper {
+    margin-top: 50px;
+    img {
+        width: 100%;
+        height: 100%;
+    }
 }
 </style>

@@ -4,10 +4,11 @@
 -->
 <template>
     <header class="simple-header van-hairline--bottom">
-        <i v-if="!isBack" class="nbicon nbfanhui" @click="goBack"></i>
+        <i v-if="!isBack" @click="goBack">
+            <van-icon name="revoke" />
+        </i>
         <i v-else>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i>
         <div class="simple-header-name">{{ name }}</div>
-        <i class="nbicon nbmore"></i>
     </header>
     <div class="block" />
 </template>
@@ -66,6 +67,9 @@ export default {
   background: #fff;
   .simple-header-name {
     font-size: 14px;
+  }
+  i{
+      cursor: pointer;
   }
 }
 .block {
