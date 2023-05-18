@@ -35,7 +35,7 @@
                     <!-- <p v-for="item in list" :key="item">{{ item }}</p> -->
                     <template v-if="state.productList.length">
                         <div class="product-item" v-for="(item, index) in state.productList" :key="index" @click="productDetail(item)">
-                            <img :src="$filters.prefix(item.goodsCoverImg)" />
+                            <img :src="prefix(item.goodsCoverImg)" />
                             <div class="product-info">
                                 <p class="name">{{item.goodsName}}</p>
                                 <p class="subtitle">{{item.goodsIntro}}</p>
@@ -54,6 +54,7 @@
 import { reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { search } from '@/service/goods'
+import {prefix} from "@/common/js/utils.js";
 const route = useRoute()
 const router = useRouter()
 const state = reactive({
@@ -191,26 +192,26 @@ const changeTab = ({ name }) => {
 }
 .product-list-refresh {
   .product-item {
-    .fj();
+    .fj(flex-start);
     width: 100%;
     height: 120px;
     padding: 10px 0;
     border-bottom: 1px solid #dcdcdc;
+    cursor: pointer;
     img {
-      width: 140px;
-      height: 120px;
+      width: 120px;
+      height: 100%;
       padding: 0 10px;
       .boxSizing();
     }
     .product-info {
-      width: 56%;
-      height: 120px;
+      .fj();
+      flex-direction: column;
+      width: 50%;
+      height: 100%;
       padding: 5px;
       text-align: left;
       .boxSizing();
-      p {
-        margin: 0
-      }
       .name {
         width: 100%;
         max-height: 40px;
@@ -223,9 +224,8 @@ const changeTab = ({ name }) => {
       }
       .subtitle {
         width: 100%;
-        max-height: 20px;
-        padding: 10px 0;
-        line-height: 25px;
+        max-height: 40px;
+        line-height: 40px;
         font-size: 13px;
         color: #999;
         overflow: hidden;

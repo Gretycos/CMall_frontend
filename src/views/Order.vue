@@ -36,6 +36,9 @@
                                 :title="one.goodsName"
                                 :thumb="prefix(one.goodsCoverImg)"
                         />
+                        <div class="price" v-if="item.orderStatus > 0">
+                            <span>实付款 ¥{{item.totalPrice}}</span>
+                        </div>
                     </div>
                 </van-list>
             </van-pull-refresh>
@@ -161,6 +164,14 @@ const onRefresh = () => {
       .van-card {
         background-color: #fff;
         margin-top: 0;
+      }
+      .price{
+        display: flex;
+        justify-content: flex-end;
+        span{
+            font-size: 16px;
+            font-weight: 500;
+        }
       }
     }
   }
