@@ -4,22 +4,22 @@
 -->
 <template>
     <van-swipe class="my-swiper" :autoplay="3000" indicator-color="#1baeae">
-        <van-swipe-item v-for="(item, index) in list" :key="index">
+        <van-swipe-item v-for="(item, index) in props.list" :key="index">
             <img :src="item.carouselUrl" alt="" @click="goTo(item.redirectUrl)">
         </van-swipe-item>
     </van-swipe>
 </template>
 
-<script>
-export default {
-    props: {
-        list: Array
-    },
-    methods: {
-        goTo(url) {
-            window.open(url)
-        }
-    }
+<script setup>
+import {useRouter} from "vue-router";
+
+const props = defineProps({
+    list: Array
+})
+
+const router = useRouter()
+const goTo = (url) => {
+    router.push(url)
 }
 </script>
 

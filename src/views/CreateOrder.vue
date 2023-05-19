@@ -17,7 +17,7 @@
         </div>
         <div class="goods">
             <div class="goods-item" v-for="(item, index) in state.cartList" :key="index">
-                <div class="good-img"><img :src="prefix(item.goodsCoverImg)" alt=""></div>
+                <div class="good-img"><img :src="item.goodsCoverImg" alt=""></div>
                 <div class="goods-desc">
                     <div class="goods-title">
                         <span>{{ item.goodsName }}</span>

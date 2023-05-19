@@ -23,6 +23,10 @@ export function cancelOrder(id) {
     return axios.put(`/order/cancel/${id}`);
 }
 
+export function deleteOrder(id) {
+    return axios.put(`/order/delete/${id}`);
+}
+
 export function confirmOrder(id) {
     return axios.put(`/order/finish/${id}`)
 }

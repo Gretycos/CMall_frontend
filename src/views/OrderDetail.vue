@@ -18,9 +18,20 @@
                 <label>下单时间：</label>
                 <span>{{ state.detail.createTime }}</span>
             </div>
-            <van-button v-if="state.detail.orderStatus === 3" style="margin-bottom: 10px" color="#1baeae" block @click="handleConfirmOrder(state.detail.orderNo)">确认收货</van-button>
-            <van-button v-if="state.detail.orderStatus === 0" style="margin-bottom: 10px" color="#1baeae" block @click="showPayFn">去支付</van-button>
-            <van-button v-if="!(state.detail.orderStatus < 0 || state.detail.orderStatus === 4)" block @click="handleCancelOrder(state.detail.orderNo)">取消订单</van-button>
+            <van-button v-if="state.detail.orderStatus === 3"
+                        style="margin-bottom: 10px" color="#1baeae"
+                        block
+                        @click="handleConfirmOrder(state.detail.orderNo)">确认收货</van-button>
+            <van-button v-if="state.detail.orderStatus === 0"
+                        style="margin-bottom: 10px" color="#1baeae"
+                        block
+                        @click="showPayFn">去支付</van-button>
+            <van-button v-if="!(state.detail.orderStatus < 0 || state.detail.orderStatus === 4)"
+                        block
+                        @click="handleCancelOrder(state.detail.orderNo)">取消订单</van-button>
+            <van-button v-if="state.detail.orderStatus < 0 || state.detail.orderStatus === 4"
+                        block
+                        @click="handleDeleteOrder(state.detail.orderNo)">删除订单</van-button>
         </div>
         <div class="order-price">
             <div class="price-item">
@@ -37,11 +48,11 @@
                 :key="item.goodsId"
                 style="background: #fff"
                 :num="item.goodsCount"
-                :origin-price="item.sellingPrice * item.goodsCount"
+                :origin-price="item.sellingPrice * item.goodsCount === item.paidPrice ? null : item.sellingPrice * item.goodsCount"
                 :price="item.paidPrice"
                 desc="全场包邮"
                 :title="item.goodsName"
-                :thumb="prefix(item.goodsCoverImg)"
+                :thumb="item.goodsCoverImg"
         />
         <van-popup
                 v-model:show="state.showPay"
@@ -57,13 +68,14 @@
 </template>
 
 <script setup>
-import { reactive, toRefs, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import sHeader from '@/components/SimpleHeader.vue'
-import { getOrderDetail, cancelOrder, confirmOrder, payOrder } from '@/service/order'
+import {getOrderDetail, cancelOrder, confirmOrder, payOrder, deleteOrder} from '@/service/order'
 import { showConfirmDialog, showLoadingToast, closeToast, showSuccessToast, closeDialog } from 'vant'
-import { useRoute } from 'vue-router'
-import {prefix} from "@/common/js/utils.js";
+import { useRoute, useRouter } from 'vue-router'
+
 const route = useRoute()
+const router = useRouter()
 const state = reactive({
     detail: {},
     showPay: false
@@ -84,31 +96,43 @@ const init = async () => {
     closeToast()
 }
 
-const handleCancelOrder = (id) => {
+const handleCancelOrder = (orderNo) => {
     showConfirmDialog({
         title: '确认取消订单？',
-    }).then(() => {
-        cancelOrder(id).then(res => {
-            if (res.resultCode === 200) {
-                showSuccessToast('删除成功')
-                init()
-            }
-        })
+    }).then(async () => {
+        await cancelOrder(orderNo)
+        showSuccessToast('取消成功')
+        setTimeout(()=>{
+            init()
+        }, 1000)
     }).catch(() => {
         // on cancel
     });
 }
 
-const handleConfirmOrder = (id) => {
+const handleDeleteOrder = (orderNo) => {
+    showConfirmDialog({
+        title: '确认删除订单？可联系管理员恢复',
+    }).then( async() => {
+        await deleteOrder(orderNo)
+        showSuccessToast('删除成功')
+        setTimeout(() => {
+            router.go(-1)
+        }, 1000)
+    }).catch(() => {
+        // on cancel
+    });
+}
+
+const handleConfirmOrder = (orderNo) => {
     showConfirmDialog({
         title: '是否确认订单？',
-    }).then(() => {
-        confirmOrder(id).then(res => {
-            if (res.resultCode === 200) {
-                showSuccessToast('确认成功')
-                init()
-            }
-        })
+    }).then(async () => {
+        await confirmOrder(orderNo)
+        showSuccessToast('确认成功')
+        setTimeout(() => {
+            init()
+        }, 1000)
     }).catch(() => {
         // on cancel
     });
@@ -125,7 +149,7 @@ const handlePayOrder = async (id, type) => {
 }
 
 const close = () => {
-    closeDialog
+    closeDialog()
 }
 </script>
 

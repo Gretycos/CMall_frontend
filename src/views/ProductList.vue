@@ -35,7 +35,7 @@
                     <!-- <p v-for="item in list" :key="item">{{ item }}</p> -->
                     <template v-if="state.productList.length">
                         <div class="product-item" v-for="(item, index) in state.productList" :key="index" @click="productDetail(item)">
-                            <img :src="prefix(item.goodsCoverImg)" />
+                            <img :src="item.goodsCoverImg" />
                             <div class="product-info">
                                 <p class="name">{{item.goodsName}}</p>
                                 <p class="subtitle">{{item.goodsIntro}}</p>
@@ -202,6 +202,7 @@ const changeTab = ({ name }) => {
       width: 120px;
       height: 100%;
       padding: 0 10px;
+      object-fit: cover;
       .boxSizing();
     }
     .product-info {

@@ -34,7 +34,7 @@
                                 :price="one.sellingPrice"
                                 desc="全场包邮"
                                 :title="one.goodsName"
-                                :thumb="prefix(one.goodsCoverImg)"
+                                :thumb="one.goodsCoverImg"
                         />
                         <div class="price" v-if="item.orderStatus > 0">
                             <span>实付款 ¥{{item.totalPrice}}</span>

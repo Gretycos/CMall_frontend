@@ -10,7 +10,7 @@
                 <van-swipe-cell :right-width="50" v-for="(item, index) in state.list" :key="index">
                     <div class="goods-item">
                         <van-checkbox :name="item.cartItemId" />
-                        <div class="good-img"><img :src="$filters.prefix(item.goodsCoverImg)" alt=""></div>
+                        <div class="good-img"><img :src="item.goodsCoverImg" alt=""></div>
                         <div class="goods-desc">
                             <div class="goods-title">
                                 <span>{{ item.goodsName }}</span>

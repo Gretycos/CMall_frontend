@@ -149,7 +149,7 @@ onMounted(async () => {
         forbidClick: true
     });
     const { data } = await getHomePage()
-    state.carouselList = data.carouselList
+    state.carouselList = data.carousels
     state.newGoodsList = data.newGoodsList
     state.hotGoodsList = data.hotGoodsList
     state.recommendGoodsList = data.recommendGoodsList

@@ -7,20 +7,20 @@
         <s-header :name="'商品详情'"></s-header>
         <div class="detail-content">
             <div class="detail-swipe-wrap">
-                <van-swipe class="my-swipe" indicator-color="#1baeae">
+                <van-swipe class="my-swipe" indicator-color="#00b4ff" :autoplay="3000">
                     <van-swipe-item v-for="(item, index) in state.detail.goodsCarouselList" :key="index">
-                        <img :src="item" alt="">
+                        <img :src="item">
                     </van-swipe-item>
                 </van-swipe>
             </div>
             <div class="product-info">
                 <div class="product-title">
-                    {{ state.detail.goodsName || '' }}
+                    {{ state.detail.goodsName}}
                 </div>
-                <div class="product-desc">免邮费 顺丰快递</div>
+                <div class="product-desc">{{ state.detail.goodsIntro }}</div>
                 <div class="product-price">
-                    <span>¥{{ state.detail.sellingPrice || '' }}</span>
-                    <!-- <span>库存203</span> -->
+                    <span>¥{{ state.detail.sellingPrice}}</span>
+                    <span v-if="state.detail.sellingPrice !== state.detail.originalPrice">¥{{ state.detail.originalPrice }}</span>
                 </div>
             </div>
             <div class="product-intro">
@@ -30,7 +30,7 @@
                     <li>安装服务</li>
                     <li>常见问题</li>
                 </ul>
-                <div class="product-content" v-html="state.detail.goodsDetailContent || ''"></div>
+                <div class="product-content" v-html="state.detail.goodsDetailContent"></div>
             </div>
         </div>
         <van-action-bar>
@@ -57,14 +57,18 @@ const cart = useCartStore()
 
 const state = reactive({
     detail: {
-        goodsCarouselList: []
+        goodsName:'',
+        goodsIntro: '',
+        sellingPrice: 0,
+        originalPrice: 0,
+        goodsCarouselList: [],
+        goodsDetailContent: ''
     }
 })
 
 onMounted(async () => {
     const { id } = route.params
     const { data } = await getDetail(id)
-    data.goodsCarouselList = data.goodsCarouselList.map(i => prefix(i))
     state.detail = data
     await cart.updateCart()
 })
@@ -122,10 +126,12 @@ const goToCart = async () => {
     overflow: hidden;
     overflow-y: auto;
     .detail-swipe-wrap {
+        align-items: center;
       .my-swipe .van-swipe-item {
         img {
           width: 100%;
-          // height: 300px;
+          object-fit: contain;
+           height: 300px;
         }
       }
     }
@@ -143,14 +149,17 @@ const goToCart = async () => {
         padding: 5px 0;
       }
       .product-price {
-        .fj();
-        span:nth-child(1) {
+        .fj(flex-start);
+          align-items: center;
+          span:nth-child(1) {
           color: #F63515;
           font-size: 22px;
         }
         span:nth-child(2) {
+          margin-left: 10px;
           color: #999;
           font-size: 16px;
+          text-decoration: line-through;
         }
       }
     }
@@ -175,8 +184,9 @@ const goToCart = async () => {
       }
       .product-content {
         padding: 0 20px;
-        img {
+          img {
           width: 100%;
+          object-fit: cover;
         }
       }
     }
