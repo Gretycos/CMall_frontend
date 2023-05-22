@@ -37,6 +37,7 @@ time: 2023/4/20 12:29
                             <div class="title">{{ item.goodsName }}</div>
                             <span class="seckill-price">¥ {{ item.seckillPrice }}</span>
                             <span class="origin-price">¥ {{ item.sellingPrice }}</span>
+                            <div class="begin-time">抢购时间 {{convertBegin(item.seckillBegin)}}</div>
                         </div>
                     </div>
                 </div>
@@ -184,6 +185,11 @@ nextTick(() => {
     })
 })
 
+const convertBegin = (seckillBegin) => {
+    const length = seckillBegin.length
+    return seckillBegin.substring(5, length - 3)
+}
+
 const goToDetail = (item) => {
     router.push({ path: `/product/${item.goodsId}` })
 }
@@ -324,6 +330,11 @@ const tips = () => {
                 .seckill-price{
                     color: #F63515;
                     font-size: 16px;
+                }
+                .begin-time{
+                    color: #00b4ff;
+                    font-size: 12px;
+                    font-weight: bold;
                 }
             }
             &:nth-child(2n + 1) {

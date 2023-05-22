@@ -94,7 +94,7 @@ import {createOrder, createSeckillOrder, payOrder} from '@/service/order'
 import {getLocal, prefix, removeLocal, setLocal} from '@/common/js/utils'
 import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
 import {useRoute, useRouter} from 'vue-router'
-import {getSeckillDetails} from "@/service/seckill.js";
+import {executeSeckill, getSeckillDetails} from "@/service/seckill.js";
 
 const router = useRouter()
 const route = useRoute()
@@ -110,7 +110,7 @@ const state = reactive({
     isSeckillOrder: false,
     seckillId: '',
     seckillSuccessId: '',
-    md5: '',
+    md5: '', // exposer的密钥，不是秒杀成功的密钥
     seckillItem: {}
 })
 
@@ -120,13 +120,12 @@ onMounted(() => {
 
 const init = async () => {
     showLoadingToast({ message: '加载中...', forbidClick: true });
-    const { addressId, cartItemIds, seckillId, seckillSuccessId, md5 } = route.query
-    if (seckillSuccessId){
+    const { addressId, cartItemIds, seckillId, md5 } = route.query
+    if (seckillId && md5){
         state.isSeckillOrder = true
         const {data} = await getSeckillDetails(seckillId)
         state.seckillId = seckillId
         state.seckillItem = data
-        state.seckillSuccessId = seckillSuccessId
         state.md5 = md5
     } else {
         const _cartItemIds = cartItemIds ? JSON.parse(cartItemIds) : JSON.parse(getLocal('cartItemIds'))
@@ -170,7 +169,6 @@ const goToAddress = () => {
             from: 'create-order',
             cartItemIds: JSON.stringify(state.cartItemIds),
             seckillId: state.seckillId,
-            seckillSuccessId: state.seckillSuccessId,
             md5: state.md5
         }
     })
@@ -209,9 +207,14 @@ const handleCreateOrder = async () => {
         removeLocal('cartItemIds')
         state.orderNo = data
     } else {
+        const exe_params = {
+            seckillId: state.seckillId,
+            md5: state.md5
+        }
+        const {data:{seckillSuccessId, md5}} = await executeSeckill(exe_params)
         const params = {
-            seckillSuccessId: state.seckillSuccessId,
-            seckillSecretKey: state.md5,
+            seckillSuccessId: seckillSuccessId,
+            seckillSecretKey: md5,
             addressId: state.address.addressId
         }
         const {data} = await createSeckillOrder(params)
@@ -219,7 +222,7 @@ const handleCreateOrder = async () => {
     }
     setTimeout(() => {
         closeToast()
-    }, 2000)
+    }, 1000)
 }
 
 const close = () => {
@@ -235,12 +238,17 @@ const handlePayOrder = async (type) => {
 }
 
 const total = computed(() => {
-    let sum = 0
-    state.cartList.forEach(item => {
-        sum += item.goodsCount * item.sellingPrice
-    })
-    let discount = state.chosenCoupon === -1 ? 0 : state.couponList[state.chosenCoupon].value / 100
-    return sum - discount
+    if (!state.isSeckillOrder){
+        let sum = 0
+        state.cartList.forEach(item => {
+            sum += item.goodsCount * item.sellingPrice
+        })
+        let discount = state.chosenCoupon === -1 ? 0 : state.couponList[state.chosenCoupon].value / 100
+        return sum - discount
+    } else {
+        return state.seckillItem.seckillPrice
+    }
+
 })
 </script>
 

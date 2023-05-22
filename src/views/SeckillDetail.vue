@@ -35,14 +35,22 @@
         </div>
         <van-action-bar>
             <van-action-bar-icon icon="chat-o" text="客服" />
-            <div class="count-down" v-if="state.time > 0">
+            <div class="count-down" v-if="state.time > 0 && state.disabled">
                 <div class="count-down-title">秒杀开始还有：</div>
                 <van-count-down
-                  ref="countDown"
                   :time="state.time"
                   :auto-start="true"
                   format="DD 天 HH 时 mm 分 ss 秒"
-                  @finish="handleCountDownFinish"
+                  @finish="handleStartCountDownFinish"
+                />
+            </div>
+            <div class="count-down" v-if="state.endTime > 0 && !state.disabled">
+                <div class="count-down-title">秒杀结束还有：</div>
+                <van-count-down
+                    :time="state.endTime"
+                    :auto-start="true"
+                    format="DD 天 HH 时 mm 分 ss 秒"
+                    @finish="handleEndCountDownFinish"
                 />
             </div>
             <van-action-bar-button type="warning" @click="handleSeckill" :text="state.buttonText" :disabled="state.disabled" />
@@ -53,13 +61,8 @@
 <script setup>
 import { reactive, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useCartStore } from '@/stores/cart'
-import { getDetail } from '@/service/goods'
-import { addCart } from '@/service/cart'
 import sHeader from '@/components/SimpleHeader.vue'
-import { showSuccessToast } from 'vant'
-import { prefix } from '@/common/js/utils'
-import {checkSeckillStock, executeSeckill, getSeckillDetails, getSeckillExposer} from "@/service/seckill.js";
+import {checkSeckillStock, getSeckillDetails, getSeckillExposer} from "@/service/seckill.js";
 const route = useRoute()
 const router = useRouter()
 
@@ -77,8 +80,10 @@ const state = reactive({
         seckillEnd: ''
     },
     time: 0,
+    endTime: 0,
     disabled: true,
-    buttonText: ''
+    buttonText: '',
+    checkStockInterval: null
 })
 
 onMounted(async () => {
@@ -103,9 +108,10 @@ const initCountDown = (now, begin, end) => {
     } else if (now > end){
         state.time = 0
         state.disabled = true
-        state.buttonText = '秒杀已结束'
+        state.buttonText = '已结束'
     } else {
         state.time = 0
+        state.endTime = end - now
         state.disabled = false
         state.buttonText = '立即秒杀'
         initCheckStock()
@@ -113,7 +119,7 @@ const initCountDown = (now, begin, end) => {
 }
 
 const initCheckStock = () => {
-    setInterval(async () => {
+    state.checkStockInterval = setInterval(async () => {
         try {
             await checkSeckillStock(state.detail.seckillId)
             state.disabled = false
@@ -135,26 +141,25 @@ const goBack = () => {
     router.go(-1)
 }
 
-const handleCountDownFinish = () => {
+const handleStartCountDownFinish = () => {
     state.disabled = false
     state.buttonText = '立即秒杀'
+}
+
+const handleEndCountDownFinish = () => {
+    state.disabled = true
+    state.buttonText = '已结束'
 }
 
 const handleSeckill = async () => {
     const {data:{seckillStatusEnum, md5, now, start, end} } = await getSeckillExposer(state.detail.seckillId)
     if (seckillStatusEnum === 'START'){
         state.disabled = true
-        const params = {
-            seckillId: state.detail.seckillId,
-            md5: md5
-        }
-        const {data} = await executeSeckill(params)
-        router.push({
-            path: 'create-order',
+        await router.push({
+            path: '/create-order',
             query: {
                 seckillId: state.detail.seckillId,
-                seckillSuccessId: data.seckillSuccessId,
-                md5: data.md5
+                md5: md5
             }
         })
     } else if (seckillStatusEnum === 'STARTED_SHORTAGE_STOCK'){
@@ -162,9 +167,9 @@ const handleSeckill = async () => {
         state.buttonText = '已抢光'
     } else {
         state.disabled = true
-        state.buttonText = '尚未开始'
         initCountDown(now, start, end)
     }
+    clearInterval(state.checkStockInterval)
 }
 
 </script>

@@ -39,7 +39,6 @@ const state = reactive({
     list: [],
     cartItemIds: route?.query?.cartItemIds ?? '',
     seckillId: route?.query?.seckillId ?? '',
-    seckillSuccessId: route?.query?.seckillSuccessId ?? '',
     md5: route?.query?.md5 ?? '',
     from: route?.query?.from ?? ''
 })
@@ -81,7 +80,6 @@ const select = (item, index) => {
             addressId: item.id,
             cartItemIds: state.cartItemIds,
             seckillId: state.seckillId,
-            seckillSuccessId: state.seckillSuccessId,
             md5: state.md5,
             from: state.from
         }
