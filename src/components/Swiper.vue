@@ -5,7 +5,7 @@
 <template>
     <van-swipe class="my-swiper" :autoplay="3000" indicator-color="#1baeae">
         <van-swipe-item v-for="(item, index) in props.list" :key="index">
-            <img :src="item.carouselUrl" alt="" @click="goTo(item.redirectUrl)">
+            <img :src="item.carouselUrl" @click="goTo(item.redirectUrl)">
         </van-swipe-item>
     </van-swipe>
 </template>

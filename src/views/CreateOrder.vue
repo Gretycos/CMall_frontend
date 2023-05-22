@@ -6,7 +6,7 @@
     <div class="create-order">
         <s-header :name="'生成订单'" @callback="deleteLocal"></s-header>
         <div class="address-wrap">
-            <div class="name" @click="goTo">
+            <div class="name" @click="goToAddress">
                 <span>{{ state.address.userName }} </span>
                 <span>{{ state.address.userPhone }}</span>
             </div>
@@ -15,7 +15,7 @@
             </div>
             <van-icon class="arrow" name="arrow" />
         </div>
-        <div class="goods">
+        <div class="goods" v-if="!state.isSeckillOrder">
             <div class="goods-item" v-for="(item, index) in state.cartList" :key="index">
                 <div class="good-img"><img :src="item.goodsCoverImg" alt=""></div>
                 <div class="goods-desc">
@@ -29,11 +29,26 @@
                 </div>
             </div>
         </div>
+        <div class="goods" v-else>
+            <div class="goods-item">
+                <div class="good-img"><img :src="state.seckillItem.goodsCoverImg" alt=""></div>
+                <div class="goods-desc">
+                    <div class="goods-title">
+                        <span>{{ state.seckillItem.goodsName }}</span>
+                        <span>x1</span>
+                    </div>
+                    <div class="goods-btn">
+                        <div class="price">¥{{ state.seckillItem.seckillPrice }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="pay-wrap">
             <van-coupon-cell
                 :coupons="state.couponList"
                 :chosen-coupon="state.chosenCoupon"
                 @click="state.showCouponList = true"
+                v-if="!state.isSeckillOrder"
             />
             <div class="price">
                 <span>商品金额</span>
@@ -58,6 +73,7 @@
             v-model:show="state.showCouponList"
             position="bottom"
             style="height: 80%; padding-top: 10px;"
+            v-if="!state.isSeckillOrder"
         >
             <van-coupon-list
                 :coupons="state.couponList"
@@ -74,10 +90,11 @@ import {computed, onMounted, reactive} from 'vue'
 import sHeader from '@/components/SimpleHeader.vue'
 import {getByCartItemIds} from '@/service/cart'
 import {getAddressDetail, getDefaultAddress} from '@/service/address'
-import {createOrder, payOrder} from '@/service/order'
+import {createOrder, createSeckillOrder, payOrder} from '@/service/order'
 import {getLocal, prefix, removeLocal, setLocal} from '@/common/js/utils'
 import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
 import {useRoute, useRouter} from 'vue-router'
+import {getSeckillDetails} from "@/service/seckill.js";
 
 const router = useRouter()
 const route = useRoute()
@@ -89,7 +106,12 @@ const state = reactive({
     orderNo: '',
     cartItemIds: [],
     couponList: [],
-    chosenCoupon: -1
+    chosenCoupon: -1,
+    isSeckillOrder: false,
+    seckillId: '',
+    seckillSuccessId: '',
+    md5: '',
+    seckillItem: {}
 })
 
 onMounted(() => {
@@ -98,28 +120,38 @@ onMounted(() => {
 
 const init = async () => {
     showLoadingToast({ message: '加载中...', forbidClick: true });
-    const { addressId, cartItemIds } = route.query
-    const _cartItemIds = cartItemIds ? JSON.parse(cartItemIds) : JSON.parse(getLocal('cartItemIds'))
-    setLocal('cartItemIds', cartItemIds)
-    const { data: {itemsForConfirmPage, myCouponVOList}} = await getByCartItemIds({ cartItemIds: _cartItemIds })
-    state.cartList = itemsForConfirmPage
-    state.couponList = myCouponVOList.map(e => {
-        return {
-            id: e.couponId,
-            couponUserId: e.couponUserId,
-            name: e.couponName,
-            condition: e.couponDesc,
-            description: parseGoodsType(e.goodsType) + e.goodsValue,
-            value: e.discount * 100,
-            valueDesc: e.discount,
-            unitDesc: '元',
-            startAt: new Date(e.startTime).getTime() / 1000,
-            endAt: new Date(e.endTime).getTime() / 1000
-        }
-    })
+    const { addressId, cartItemIds, seckillId, seckillSuccessId, md5 } = route.query
+    if (seckillSuccessId){
+        state.isSeckillOrder = true
+        const {data} = await getSeckillDetails(seckillId)
+        state.seckillId = seckillId
+        state.seckillItem = data
+        state.seckillSuccessId = seckillSuccessId
+        state.md5 = md5
+    } else {
+        const _cartItemIds = cartItemIds ? JSON.parse(cartItemIds) : JSON.parse(getLocal('cartItemIds'))
+        setLocal('cartItemIds', cartItemIds)
+        const { data: {itemsForConfirmPage, myCouponVOList}} = await getByCartItemIds({ cartItemIds: _cartItemIds })
+        state.cartList = itemsForConfirmPage
+        state.couponList = myCouponVOList.map(e => {
+            return {
+                id: e.couponId,
+                couponUserId: e.couponUserId,
+                name: e.couponName,
+                condition: e.couponDesc,
+                description: parseGoodsType(e.goodsType) + e.goodsValue,
+                value: e.discount * 100,
+                valueDesc: e.discount,
+                unitDesc: '元',
+                startAt: new Date(e.startTime).getTime() / 1000,
+                endAt: new Date(e.endTime).getTime() / 1000
+            }
+        })
+    }
+
     const { data: address} = addressId ? await getAddressDetail(addressId) : await getDefaultAddress()
     if (!address) {
-        router.push({ path: '/address' })
+        goToAddress()
         return
     }
     state.address = address
@@ -131,8 +163,17 @@ const parseGoodsType = (type) => {
 }
 
 
-const goTo = () => {
-    router.push({ path: '/address', query: { cartItemIds: JSON.stringify(state.cartItemIds), from: 'create-order' }})
+const goToAddress = () => {
+    router.push({
+        path: '/address',
+        query: {
+            from: 'create-order',
+            cartItemIds: JSON.stringify(state.cartItemIds),
+            seckillId: state.seckillId,
+            seckillSuccessId: state.seckillSuccessId,
+            md5: state.md5
+        }
+    })
 }
 
 const deleteLocal = () => {
@@ -152,20 +193,30 @@ const handleCreateOrder = async () => {
     showLoadingToast({
         message: '创建订单中...',
         forbidClick: true,
-        onClose:()=>{
+        onClose:() => {
             state.showPay = true
         }
     })
-    let params = {
-        addressId: state.address.addressId,
-        cartItemIds: state.cartList.map(item => item.cartItemId)
+    if (!state.isSeckillOrder){
+        let params = {
+            addressId: state.address.addressId,
+            cartItemIds: state.cartList.map(item => item.cartItemId)
+        }
+        if (state.chosenCoupon !== -1){
+            params.couponUserId = state.couponList[state.chosenCoupon].couponUserId
+        }
+        const { data } = await createOrder(params)
+        removeLocal('cartItemIds')
+        state.orderNo = data
+    } else {
+        const params = {
+            seckillSuccessId: state.seckillSuccessId,
+            seckillSecretKey: state.md5,
+            addressId: state.address.addressId
+        }
+        const {data} = await createSeckillOrder(params)
+        state.orderNo = data
     }
-    if (state.chosenCoupon !== -1){
-        params.couponUserId = state.couponList[state.chosenCoupon].couponUserId
-    }
-    const { data } = await createOrder(params)
-    removeLocal('cartItemIds')
-    state.orderNo = data
     setTimeout(() => {
         closeToast()
     }, 2000)

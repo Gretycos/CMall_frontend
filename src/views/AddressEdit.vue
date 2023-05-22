@@ -27,6 +27,7 @@ import sHeader from '@/components/SimpleHeader.vue'
 import { addAddress, EditAddress, DeleteAddress, getAddressDetail } from '@/service/address'
 import { tdist } from '@/common/js/utils'
 import { useRoute, useRouter } from 'vue-router'
+
 const route = useRoute()
 const router = useRouter()
 const state = reactive({

@@ -61,6 +61,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/seckill/:id',
+            name: 'seckill',
+            component: () => import('@/views/SeckillDetail.vue'),
+            meta: {
+                index: 2
+            }
+        },
+        {
             path: '/cart',
             name: 'cart',
             component: () => import('@/views/Cart.vue'),

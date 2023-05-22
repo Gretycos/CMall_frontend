@@ -28,11 +28,26 @@ time: 2023/4/20 12:29
             </div>
         </div>
         <div class="goods">
+            <header class="goods-header">秒杀专区</header>
+            <van-skeleton title :row="3" :loading="state.loading">
+                <div class="goods-box">
+                    <div class="goods-item" v-for="item in state.seckillList" :key="item.goodsId" @click="goToSeckill(item)">
+                        <img :src="item.goodsCoverImg" alt="">
+                        <div class="goods-desc">
+                            <div class="title">{{ item.goodsName }}</div>
+                            <span class="seckill-price">¥ {{ item.seckillPrice }}</span>
+                            <span class="origin-price">¥ {{ item.sellingPrice }}</span>
+                        </div>
+                    </div>
+                </div>
+            </van-skeleton>
+        </div>
+        <div class="goods">
             <header class="goods-header">新品上线</header>
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
                     <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item)">
-                        <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
+                        <img :src="item.goodsCoverImg" alt="">
                         <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
@@ -46,7 +61,7 @@ time: 2023/4/20 12:29
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
                     <div class="goods-item" v-for="item in state.hotGoodsList" :key="item.goodsId" @click="goToDetail(item)">
-                        <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
+                        <img :src="item.goodsCoverImg" alt="">
                         <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
@@ -60,7 +75,7 @@ time: 2023/4/20 12:29
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
                     <div class="goods-item" v-for="item in state.recommendGoodsList" :key="item.goodsId" @click="goToDetail(item)">
-                        <img :src="$filters.prefix(item.goodsCoverImg)" alt="">
+                        <img :src="item.goodsCoverImg" alt="">
                         <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
                             <div class="price">¥ {{ item.sellingPrice }}</div>
@@ -81,6 +96,7 @@ import { getHomePage } from '@/service/home'
 import { getLocal } from '@/common/js/utils'
 import { showLoadingToast, closeToast, showToast } from 'vant'
 import { useCartStore } from '@/stores/cart'
+import {getSeckillList} from "@/service/seckill.js";
 // 全局状态store
 const cart = useCartStore()
 const router = useRouter()
@@ -92,6 +108,7 @@ const state = reactive({
     hotGoodsList: [],
     newGoodsList: [],
     recommendGoodsList: [],
+    seckillList: [],
     categoryList: [
         {
             name: '超市',
@@ -149,10 +166,12 @@ onMounted(async () => {
         forbidClick: true
     });
     const { data } = await getHomePage()
-    state.carouselList = data.carousels
+    state.carouselList = data.carouselList
     state.newGoodsList = data.newGoodsList
     state.hotGoodsList = data.hotGoodsList
     state.recommendGoodsList = data.recommendGoodsList
+    const {data:seckillList} = await getSeckillList()
+    state.seckillList = seckillList
     state.loading = false
     closeToast()
 })
@@ -167,6 +186,10 @@ nextTick(() => {
 
 const goToDetail = (item) => {
     router.push({ path: `/product/${item.goodsId}` })
+}
+
+const goToSeckill = (item) => {
+  router.push({ path: `/seckill/${item.seckillId}` })
 }
 
 const tips = () => {
@@ -292,6 +315,15 @@ const tips = () => {
                 }
                 .price {
                     color: @primary;
+                }
+                .origin-price{
+                    margin-left: 3px;
+                    font-size: 10px;
+                    text-decoration-line: line-through;
+                }
+                .seckill-price{
+                    color: #F63515;
+                    font-size: 16px;
                 }
             }
             &:nth-child(2n + 1) {

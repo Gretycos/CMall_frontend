@@ -37,6 +37,10 @@ const router = useRouter()
 const state = reactive({
     chosenAddressId: '1',
     list: [],
+    cartItemIds: route?.query?.cartItemIds ?? '',
+    seckillId: route?.query?.seckillId ?? '',
+    seckillSuccessId: route?.query?.seckillSuccessId ?? '',
+    md5: route?.query?.md5 ?? '',
     from: route?.query?.from ?? ''
 })
 
@@ -71,7 +75,17 @@ const onEdit = (item) => {
 }
 // 选择某个地址后，跳回订单生成页面
 const select = (item, index) => {
-    router.push({ path: 'create-order', query: { addressId: item.id, from: state.from  } })
+    router.push({
+        path: 'create-order',
+        query: {
+            addressId: item.id,
+            cartItemIds: state.cartItemIds,
+            seckillId: state.seckillId,
+            seckillSuccessId: state.seckillSuccessId,
+            md5: state.md5,
+            from: state.from
+        }
+    })
 }
 </script>
 
