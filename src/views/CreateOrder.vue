@@ -142,8 +142,8 @@ const init = async () => {
                 value: e.discount * 100,
                 valueDesc: e.discount,
                 unitDesc: '元',
-                startAt: new Date(e.startTime).getTime() / 1000,
-                endAt: new Date(e.endTime).getTime() / 1000
+                startAt: new Date(e.couponStartTime).getTime() / 1000,
+                endAt: new Date(e.couponEndTime).getTime() / 1000
             }
         })
     }
