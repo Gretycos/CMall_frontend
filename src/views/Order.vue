@@ -5,7 +5,7 @@
 <template>
     <div class="order-box">
         <s-header :name="'我的订单'" :back="'/user'"></s-header>
-        <van-tabs @click-tab="onChangeTab" :color="'#1baeae'" :title-active-color="'#1baeae'" class="order-tab" v-model="state.status">
+        <van-tabs @click-tab="onChangeTab" :color="'#00b4ff'" :title-active-color="'#00b4ff'" class="order-tab" v-model="state.status">
             <van-tab title="全部" name=''></van-tab>
             <van-tab title="待付款" name="0"></van-tab>
             <van-tab title="待确认" name="1"></van-tab>
@@ -51,7 +51,6 @@ import { reactive } from 'vue';
 import sHeader from '@/components/SimpleHeader.vue'
 import { getOrderList } from '@/service/order'
 import { useRouter } from 'vue-router'
-import {prefix} from "@/common/js/utils.js";
 
 const router = useRouter()
 const state = reactive({

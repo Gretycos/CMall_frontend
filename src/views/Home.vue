@@ -22,7 +22,7 @@ time: 2023/4/20 12:29
         <nav-bar />
         <swiper :list="state.carouselList"></swiper>
         <div class="category-list">
-            <div v-for="item in state.categoryList" v-bind:key="item.categoryId" @click="tips">
+            <div v-for="item in state.categoryList" v-bind:key="item.id" @click="handleCategoryClick(item.id)">
                 <img :src="item.imgUrl">
                 <span>{{item.name}}</span>
             </div>
@@ -47,7 +47,7 @@ time: 2023/4/20 12:29
             <header class="goods-header">新品上线</header>
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
-                    <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item)">
+                    <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item.id)">
                         <img :src="item.goodsCoverImg" alt="">
                         <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
@@ -114,43 +114,43 @@ const state = reactive({
         {
             name: '超市',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E8%B6%85%E5%B8%82%402x.png',
-            categoryId: 100001
+            id: 1
         }, {
             name: '服饰',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E6%9C%8D%E9%A5%B0%402x.png',
-            categoryId: 100003
+            id: 2
         }, {
             name: '全球购',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%A8%E7%90%83%E8%B4%AD%402x.png',
-            categoryId: 100002
+            id: 3
         }, {
             name: '生鲜',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E7%94%9F%E9%B2%9C%402x.png',
-            categoryId: 100004
+            id: 4
         }, {
             name: '到家',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%88%B0%E5%AE%B6%402x.png',
-            categoryId: 100005
+            id: 5
         }, {
             name: '充值缴费',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%85%E5%80%BC%402x.png',
-            categoryId: 100006
+            id: 6
         }, {
             name: '9.9元拼',
             imgUrl: 'https://s.yezgea02.com/1604041127880/9.9%402x.png',
-            categoryId: 100007
+            id: 7
         }, {
             name: '领劵',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E9%A2%86%E5%88%B8%402x.png',
-            categoryId: 100008
+            id: 8
         }, {
             name: '省钱',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E7%9C%81%E9%92%B1%402x.png',
-            categoryId: 100009
+            id: 9
         }, {
             name: '全部',
             imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%A8%E9%83%A8%402x.png',
-            categoryId: 100010
+            id: 10
         }
     ],
     loading: true
@@ -198,8 +198,12 @@ const goToSeckill = (item) => {
   router.push({ path: `/seckill/${item.seckillId}` })
 }
 
-const tips = () => {
-    showToast('敬请期待');
+const handleCategoryClick = (id) => {
+    if (id === 8){
+        router.push({path: '/coupon'})
+    } else {
+        showToast('敬请期待');
+    }
 }
 </script>
 

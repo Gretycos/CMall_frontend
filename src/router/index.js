@@ -37,6 +37,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/coupon',
+            name: 'coupon',
+            component: () => import('@/views/Coupon.vue'),
+            meta: {
+                index: 2
+            }
+        },
+        {
             path: '/product-list',
             name: 'product-list',
             component: () => import('@/views/ProductList.vue'),
@@ -114,6 +122,14 @@ const router = createRouter({
             component: () => import('@/views/OrderDetail.vue'),
             meta: {
                 index: 3
+            }
+        },
+        {
+            path: '/my-coupon',
+            name: 'my-coupon',
+            component: () => import('@/views/MyCoupon.vue'),
+            meta: {
+                index: 2
             }
         },
         {

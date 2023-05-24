@@ -197,7 +197,8 @@ const checkAll = () => {
       display: flex;
       .good-img {
         img {
-          .wh(100px, 100px)
+          .wh(100px, 100px);
+          object-fit: cover;
         }
       }
       .goods-desc {

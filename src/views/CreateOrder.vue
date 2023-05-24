@@ -77,9 +77,10 @@
         >
             <van-coupon-list
                 :coupons="state.couponList"
+                :disabled-coupons="state.disabledCoupons"
                 :chosen-coupon="state.chosenCoupon"
                 @change="handleCouponChange"
-                @exchange="handleCouponExchange"
+                :show-exchange-bar="false"
             />
         </van-popup>
     </div>
@@ -91,10 +92,11 @@ import sHeader from '@/components/SimpleHeader.vue'
 import {getByCartItemIds} from '@/service/cart'
 import {getAddressDetail, getDefaultAddress} from '@/service/address'
 import {createOrder, createSeckillOrder, payOrder} from '@/service/order'
-import {getLocal, prefix, removeLocal, setLocal} from '@/common/js/utils'
+import {getLocal, removeLocal, setLocal} from '@/common/js/utils'
 import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
 import {useRoute, useRouter} from 'vue-router'
 import {executeSeckill, getSeckillDetails} from "@/service/seckill.js";
+import {getAllMyAvailableCouponList} from "@/service/coupon.js";
 
 const router = useRouter()
 const route = useRoute()
@@ -106,6 +108,7 @@ const state = reactive({
     orderNo: '',
     cartItemIds: [],
     couponList: [],
+    disabledCoupons: [],
     chosenCoupon: -1,
     isSeckillOrder: false,
     seckillId: '',
@@ -133,6 +136,21 @@ const init = async () => {
         const { data: {itemsForConfirmPage, myCouponVOList}} = await getByCartItemIds({ cartItemIds: _cartItemIds })
         state.cartList = itemsForConfirmPage
         state.couponList = myCouponVOList.map(e => {
+            if (e.couponStartTime){
+                return {
+                    id: e.couponId,
+                    couponUserId: e.couponUserId,
+                    name: e.couponName,
+                    condition: e.couponDesc,
+                    description: parseGoodsType(e.goodsType) + e.goodsValue,
+                    value: e.discount * 100,
+                    valueDesc: e.discount,
+                    unitDesc: '元',
+                    startAt: new Date(e.couponStartTime).getTime() / 1000,
+                    endAt: new Date(e.couponEndTime).getTime() / 1000
+                }
+            }
+            const startTime = new Date(e.couponUserCreateTime)
             return {
                 id: e.couponId,
                 couponUserId: e.couponUserId,
@@ -142,10 +160,11 @@ const init = async () => {
                 value: e.discount * 100,
                 valueDesc: e.discount,
                 unitDesc: '元',
-                startAt: new Date(e.couponStartTime).getTime() / 1000,
-                endAt: new Date(e.couponEndTime).getTime() / 1000
+                startAt: startTime.getTime() / 1000,
+                endAt: startTime.setDate(startTime.getDate() + 7) / 1000
             }
         })
+        await calDisableCoupons(myCouponVOList)
     }
 
     const { data: address} = addressId ? await getAddressDetail(addressId) : await getDefaultAddress()
@@ -155,6 +174,16 @@ const init = async () => {
     }
     state.address = address
     closeToast()
+}
+
+const calDisableCoupons = async (myCouponVOList) => {
+    const {data} = await getAllMyAvailableCouponList()
+    const couponIds = myCouponVOList.map( e => {
+        return e.couponId
+    })
+    state.disabledCoupons = data.filter(e => {
+        return !couponIds.includes(e.couponId);
+    })
 }
 
 const parseGoodsType = (type) => {
@@ -181,10 +210,6 @@ const deleteLocal = () => {
 const handleCouponChange = (index) => {
     state.showCouponList = false
     state.chosenCoupon = index
-}
-
-const handleCouponExchange = (code) => {
-    console.log(code)
 }
 
 const handleCreateOrder = async () => {
