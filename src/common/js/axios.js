@@ -4,13 +4,13 @@
  */
 import { showFailToast } from 'vant'
 import axios from 'axios'
-import { setLocal, getLocal } from '@/common/js/utils'
+import { getLocal } from '@/common/js/utils'
 import router from '@/router'
 
 
-console.log('import.meta.env', import.meta.env)
+// console.log('import.meta.env', import.meta.env)
 
-axios.defaults.baseURL = import.meta.env.MODE === 'development' ? '/api' : ''
+axios.defaults.baseURL = import.meta.env.MODE === 'development' ? '/api' : '/api'
 axios.defaults.withCredentials = true
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.headers['token'] = getLocal('token') || ''

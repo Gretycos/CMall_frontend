@@ -28,7 +28,7 @@ time: 2023/4/20 12:29
             </div>
         </div>
         <div class="goods">
-            <header class="goods-header">秒杀专区</header>
+            <header class="goods-header" v-if="state.isLogin">秒杀专区</header>
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
                     <div class="goods-item" v-for="item in state.seckillList" :key="item.goodsId" @click="goToSeckill(item)">
@@ -47,7 +47,7 @@ time: 2023/4/20 12:29
             <header class="goods-header">新品上线</header>
             <van-skeleton title :row="3" :loading="state.loading">
                 <div class="goods-box">
-                    <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item.id)">
+                    <div class="goods-item" v-for="item in state.newGoodsList" :key="item.goodsId" @click="goToDetail(item)">
                         <img :src="item.goodsCoverImg" alt="">
                         <div class="goods-desc">
                             <div class="title">{{ item.goodsName }}</div>
@@ -171,8 +171,10 @@ onMounted(async () => {
     state.newGoodsList = data.newGoodsList
     state.hotGoodsList = data.hotGoodsList
     state.recommendGoodsList = data.recommendGoodsList
-    const {data:seckillList} = await getSeckillList()
-    state.seckillList = seckillList
+    if (state.isLogin){
+        const {data:seckillList} = await getSeckillList()
+        state.seckillList = seckillList
+    }
     state.loading = false
     closeToast()
 })

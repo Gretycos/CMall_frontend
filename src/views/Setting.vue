@@ -30,10 +30,13 @@ import md5 from 'js-md5'
 import sHeader from '@/components/SimpleHeader.vue'
 import {getUserInfo, editUserInfo, logout, editUserPassword} from '@/service/user'
 import {removeLocal} from '@/common/js/utils'
-import { showSuccessToast } from 'vant'
+import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
+import {useRouter} from "vue-router";
 
 const infoForm = ref()
 const passwordForm = ref()
+
+const router = useRouter()
 
 const checkPassword = (val) => {
     return val !== state.originalPassword
@@ -107,10 +110,18 @@ const handleSubmitPassword = async () => {
 }
 
 const handleLogout = async () => {
+    showLoadingToast({
+        message: '请稍后...',
+        forbidClick: true,
+        onClose:() => {
+            // 需要刷新页面，否则 axios.js 文件里的 token 不会被重置
+            window.location.href = '/'
+        }
+    })
     const { resultCode } = await logout()
     if (resultCode === 200) {
         removeLocal('token')
-        window.location.href = '/home'
+        closeToast()
     }
 }
 </script>
