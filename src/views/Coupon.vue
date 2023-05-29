@@ -35,7 +35,7 @@
                                 </van-button>
                             </div>
                         </div>
-                        <p class="van-coupon__description">{{parseGoodsType(item.goodsType) + item.goodsValue}}</p>
+                        <p class="van-coupon__description">{{parseGoodsType(item.goodsType) + item.goodsValueNames}}</p>
                     </div>
                 </van-list>
             </van-pull-refresh>

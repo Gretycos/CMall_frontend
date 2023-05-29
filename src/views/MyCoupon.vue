@@ -30,7 +30,7 @@
                             <p class="van-coupon__valid">{{parseValidTime(item.couponStartTime, item.couponEndTime, item.couponUserCreateTime)}}</p>
                         </div>
                     </div>
-                    <p class="van-coupon__description">{{parseGoodsType(item.goodsType) + item.goodsValue}}</p>
+                    <p class="van-coupon__description">{{parseGoodsType(item.goodsType) + item.goodsValueNames}}</p>
                     <p class="van-coupon__description" v-if="state.status !== '0'">不可用原因：{{parseUseStatus(item.useStatus)}}</p>
                 </div>
                 </van-list>
