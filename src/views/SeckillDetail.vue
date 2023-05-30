@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, nextTick } from 'vue'
+import {reactive, onMounted, nextTick, onUnmounted} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import sHeader from '@/components/SimpleHeader.vue'
 import {checkSeckillStock, getSeckillDetails, getSeckillExposer} from "@/service/seckill.js";
@@ -98,6 +98,10 @@ onMounted(async () => {
     } catch (e) {
         router.go(-1)
     }
+})
+
+onUnmounted(() => {
+    clearInterval(state.checkStockInterval)
 })
 
 const initCountDown = (now, begin, end) => {

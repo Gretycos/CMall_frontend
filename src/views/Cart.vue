@@ -7,10 +7,10 @@
         <s-header :name="'购物车'" :noback="true"></s-header>
         <div class="cart-body">
             <van-checkbox-group @change="groupChange" v-model="state.result" ref="checkboxGroup">
-                <van-swipe-cell :right-width="50" v-for="(item, index) in state.list" :key="index">
+                <van-swipe-cell :right-width="70" v-for="(item, index) in state.list" :key="index">
                     <div class="goods-item">
                         <van-checkbox :name="item.cartItemId" />
-                        <div class="good-img"><img :src="item.goodsCoverImg" alt=""></div>
+                        <div class="goods-img"><img :src="item.goodsCoverImg" alt=""></div>
                         <div class="goods-desc">
                             <div class="goods-title">
                                 <span>{{ item.goodsName }}</span>
@@ -32,11 +32,11 @@
                     </div>
                     <template #right>
                         <van-button
-                                square
-                                icon="delete"
-                                type="danger"
-                                class="delete-button"
-                                @click="deleteGoods(item.cartItemId)"
+                            square
+                            icon="delete"
+                            type="danger"
+                            class="delete-button"
+                            @click="deleteGoods(item.cartItemId)"
                         />
                     </template>
                 </van-swipe-cell>
@@ -170,7 +170,7 @@ const checkAll = () => {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 @import '../common/style/mixin';
 .cart-box {
   .cart-header {
@@ -195,7 +195,7 @@ const checkAll = () => {
     padding-left: 10px;
     .goods-item {
       display: flex;
-      .good-img {
+      .goods-img {
         img {
           .wh(100px, 100px);
           object-fit: cover;

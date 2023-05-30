@@ -41,7 +41,7 @@
                                         <div class="category-list" v-for="(cate2, index) in category.secondLevelCategoryVOList" :key="index">
                                             <p class="category-title">{{cate2.categoryName}}</p>
                                             <div class="product-item" v-for="(cate3, index) in cate2.thirdLevelCategoryVOList" :key="index" @click="selectProduct(cate3)">
-                                                <i><van-icon name="bag-o" size="40" /></i>
+                                                <i><van-icon name="bag-o" size="30" /></i>
                                                 <p v-text="cate3.categoryName" class="product-title"></p>
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@ const selectProduct = (item) => {
             width: 33.3333%;
             margin-bottom: 10px;
             text-align: center;
-            font-size: 15px;
+            font-size: 13px;
             .product-img {
               .wh(30px, 30px);
             }
