@@ -8,7 +8,7 @@
         <van-skeleton title :avatar="true" :row="3" :loading="state.loading">
             <div class="user-info">
                 <div class="info">
-                    <img src="https://s.yezgea02.com/1604040746310/aaaddd.png"/>
+                    <img :src="userIcon"/>
                     <div class="user-desc">
                         <span>昵称：{{ state.user.nickName }}</span>
                         <span>登录名：{{ state.user.loginName }}</span>
@@ -44,11 +44,13 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, toRefs } from 'vue'
+import { reactive, onMounted } from 'vue'
 import navBar from '@/components/NavBar.vue'
 import sHeader from '@/components/SimpleHeader.vue'
 import { getUserInfo } from '@/service/user'
 import { useRouter } from 'vue-router'
+import userIcon from '@/assets/userAvatar.png'
+
 const router = useRouter()
 const state = reactive({
     user: {},

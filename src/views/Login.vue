@@ -5,7 +5,7 @@
 <template>
     <div class="login">
         <s-header :name="state.type === 'login' ? '登录' : '注册'" :back="'/home'"></s-header>
-        <img class="logo" src="https://s.yezgea02.com/1604045825972/newbee-mall-vue3-app-logo.png" alt="">
+        <img class="logo" :src="cartIcon" alt="">
         <div v-if="state.type === 'login'" class="login-body login">
             <van-form @submit="onSubmit">
                 <van-field
@@ -85,6 +85,8 @@ import { login, register } from '@/service/user'
 import { setLocal } from '@/common/js/utils'
 import md5 from 'js-md5'
 import { showSuccessToast, showFailToast } from 'vant'
+import cartIcon from '@/assets/cart.png'
+
 const verifyRef = ref(null)
 const state = reactive({
     username: '',

@@ -15,6 +15,11 @@ export const removeLocal = (name) => {
     localStorage.removeItem(name)
 }
 
+// 批量引入图片
+export const getAssetsUrl = (image) => {
+    return new URL(`../../assets/${image}`, import.meta.url).href
+}
+
 export const tdist = {
     210184: ["沈北新区", "210100"],
     210185: ["其它区", "210100"],

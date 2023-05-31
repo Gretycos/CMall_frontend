@@ -23,7 +23,7 @@ time: 2023/4/20 12:29
         <swiper :list="state.carouselList"></swiper>
         <div class="category-list">
             <div v-for="item in state.categoryList" v-bind:key="item.id" @click="handleCategoryClick(item.id)">
-                <img :src="item.imgUrl">
+                <img :src="getAssetsUrl(item.imgUrl)">
                 <span>{{item.name}}</span>
             </div>
         </div>
@@ -94,10 +94,12 @@ import { useRouter } from 'vue-router'
 import swiper from '@/components/Swiper.vue'
 import navBar from '@/components/NavBar.vue'
 import { getHomePage } from '@/service/home'
-import { getLocal } from '@/common/js/utils'
+import {getAssetsUrl, getLocal} from '@/common/js/utils'
 import { showLoadingToast, closeToast, showToast } from 'vant'
 import { useCartStore } from '@/stores/cart'
 import {getSeckillList} from "@/service/seckill.js";
+
+
 // 全局状态store
 const cart = useCartStore()
 const router = useRouter()
@@ -113,43 +115,43 @@ const state = reactive({
     categoryList: [
         {
             name: '超市',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E8%B6%85%E5%B8%82%402x.png',
+            imgUrl: 'cart_home.png',
             id: 1
         }, {
             name: '服饰',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E6%9C%8D%E9%A5%B0%402x.png',
+            imgUrl: 'clothes_home.png',
             id: 2
         }, {
             name: '全球购',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%A8%E7%90%83%E8%B4%AD%402x.png',
+            imgUrl: 'plane_home.png',
             id: 3
         }, {
             name: '生鲜',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E7%94%9F%E9%B2%9C%402x.png',
+            imgUrl: 'veget_home.png',
             id: 4
         }, {
             name: '到家',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%88%B0%E5%AE%B6%402x.png',
+            imgUrl: 'deliverer_home.png',
             id: 5
         }, {
             name: '充值缴费',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%85%E5%80%BC%402x.png',
+            imgUrl: 'recharge_home.png',
             id: 6
         }, {
             name: '9.9元拼',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/9.9%402x.png',
+            imgUrl: 'groupBuying_home.png',
             id: 7
         }, {
             name: '领劵',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E9%A2%86%E5%88%B8%402x.png',
+            imgUrl: 'coupon_home.png',
             id: 8
         }, {
             name: '省钱',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E7%9C%81%E9%92%B1%402x.png',
+            imgUrl: 'savingMoney_home.png',
             id: 9
         }, {
             name: '全部',
-            imgUrl: 'https://s.yezgea02.com/1604041127880/%E5%85%A8%E9%83%A8%402x.png',
+            imgUrl: 'all_home.png',
             id: 10
         }
     ],

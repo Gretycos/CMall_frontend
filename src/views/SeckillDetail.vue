@@ -131,6 +131,7 @@ const initCheckStock = () => {
         } catch (e) {
             state.disabled = true
             state.buttonText = '已抢光'
+            clearInterval(state.checkStockInterval)
         }
     }, 1000)
 }

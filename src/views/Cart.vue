@@ -53,7 +53,7 @@
             <van-checkbox @click="checkAll" v-model:checked="state.checkAll">全选</van-checkbox>
         </van-submit-bar>
         <div class="empty" v-if="!state.list.length">
-            <img class="empty-cart" src="https://s.yezgea02.com/1604028375097/empty-car.png" alt="空购物车">
+            <img class="empty-cart" :src="emptyCartIcon" alt="空购物车">
             <div class="title">购物车空空如也</div>
             <van-button round color="#00b4ff" type="primary" @click="goTo" block>前往选购</van-button>
         </div>
@@ -69,6 +69,7 @@ import { showToast, showLoadingToast, closeToast, showFailToast } from 'vant'
 import navBar from '@/components/NavBar.vue'
 import sHeader from '@/components/SimpleHeader.vue'
 import { getCart, deleteCartItem, modifyCart } from '@/service/cart'
+import emptyCartIcon from '@/assets/empty-cart.png'
 
 const router = useRouter()
 const cart = useCartStore()
