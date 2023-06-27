@@ -54,7 +54,7 @@
                 <span>商品金额</span>
                 <span class="price-num">¥{{ total }}</span>
             </div>
-            <van-button @click="handleCreateOrder" class="pay-btn" color="#1baeae" type="primary" block>生成订单</van-button>
+            <van-button @click="handleCreateOrder" class="pay-btn" color="#00b4ff" type="primary" block>生成订单</van-button>
         </div>
         <van-popup
                 closeable
@@ -181,8 +181,39 @@ const calDisableCoupons = async (myCouponVOList) => {
     const couponIds = myCouponVOList.map( e => {
         return e.couponId
     })
-    state.disabledCoupons = data.filter(e => {
+    // 从用户可用的券中，筛选出此订单不可用的券
+    const disabledList = data.filter(e => {
         return !couponIds.includes(e.couponId);
+    })
+    // 映射成所需格式
+    state.disabledCoupons = disabledList.map(e => {
+        if (e.couponStartTime){
+            return {
+                id: e.couponId,
+                couponUserId: e.couponUserId,
+                name: e.couponName,
+                condition: e.couponDesc,
+                description: parseGoodsType(e.goodsType) + e.goodsValueNames,
+                value: e.discount * 100,
+                valueDesc: e.discount,
+                unitDesc: '元',
+                startAt: new Date(e.couponStartTime).getTime() / 1000,
+                endAt: new Date(e.couponEndTime).getTime() / 1000
+            }
+        }
+        const startTime = new Date(e.couponUserCreateTime)
+        return {
+            id: e.couponId,
+            couponUserId: e.couponUserId,
+            name: e.couponName,
+            condition: e.couponDesc,
+            description: parseGoodsType(e.goodsType) + e.goodsValueNames,
+            value: e.discount * 100,
+            valueDesc: e.discount,
+            unitDesc: '元',
+            startAt: startTime.getTime() / 1000,
+            endAt: startTime.setDate(startTime.getDate() + 7) / 1000
+        }
     })
 }
 

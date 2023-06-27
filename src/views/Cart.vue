@@ -78,7 +78,7 @@ const state = reactive({
     list: [],
     all: false,
     result: [],
-    checkAll: true
+    checkAll: false
 })
 
 onMounted(() => {
@@ -153,8 +153,10 @@ const onSubmit = async () => {
 
 const deleteGoods = async (id) => {
     await deleteCartItem(id)
-    await cart.updateCart()
-    init()
+    setTimeout(async () => {
+        await cart.updateCart()
+        await init()
+    }, 500)
 }
 
 const groupChange = (result) => {

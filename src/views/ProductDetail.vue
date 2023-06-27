@@ -37,7 +37,7 @@
             <van-action-bar-icon icon="chat-o" text="客服" />
             <van-action-bar-icon icon="cart-o" :badge="!cart.count ? '' : cart.count" @click="goTo()" text="购物车" />
             <van-action-bar-button type="warning" @click="handleAddCart" text="加入购物车" />
-            <van-action-bar-button type="danger" @click="goToCart" text="立即购买" />
+            <van-action-bar-button type="danger" @click="buyAndGoToCart" text="立即购买" />
         </van-action-bar>
     </div>
 </template>
@@ -90,18 +90,23 @@ const goTo = () => {
 const handleAddCart = async () => {
     const { resultCode } = await addCart({ goodsCount: 1, goodsId: state.detail.goodsId })
     if (resultCode === 200 ) showSuccessToast('添加成功')
-    await cart.updateCart()
+    setTimeout(async () => {
+        await cart.updateCart()
+    }, 500)
+
 }
 
-const goToCart = async () => {
+const buyAndGoToCart = async () => {
     await addCart({ goodsCount: 1, goodsId: state.detail.goodsId })
-    await cart.updateCart()
-    router.push({ path: '/cart' })
+    setTimeout(async () => {
+        await cart.updateCart()
+        await router.push({path: '/cart'})
+    }, 500)
 }
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 @import '../common/style/mixin';
 .product-detail {
   .detail-header {
@@ -131,7 +136,7 @@ const goToCart = async () => {
         img {
           width: 100%;
           object-fit: contain;
-           height: 300px;
+          height: 40vh;
         }
       }
     }

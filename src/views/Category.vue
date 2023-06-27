@@ -68,7 +68,7 @@ const router = useRouter()
 const searchWrap = ref(null)
 const state = reactive({
     categoryData: [],
-    currentIndex: 15
+    currentIndex: 112
 })
 
 onMounted(async () => {
