@@ -116,7 +116,8 @@ const onSubmit = async (values) => {
             "loginName": values.username,
             "passwordMd5": md5(values.password)
         })
-        setLocal('token', data)
+        setLocal('token', data.token)
+        setLocal('user-id', data.userId)
         // 需要刷新页面，否则 axios.js 文件里的 token 不会被重置
         window.location.href = '/'
     } else {

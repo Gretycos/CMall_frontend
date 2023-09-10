@@ -3,7 +3,7 @@
  time: 2023/4/22 16:28
 -->
 <template>
-    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="#1baeae">
+    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="#00b4ff">
         <van-swipe-item v-for="(item, index) in props.list" :key="index">
             <img :src="item.carouselUrl" @click="goTo(item.redirectUrl)">
         </van-swipe-item>

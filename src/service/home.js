@@ -4,6 +4,11 @@
  */
 import axios from "@/common/js/axios"
 
+const PREFIX = '/homepage'
 export function getHomePage() {
-    return axios.get('/homepage');
+    return axios.get(PREFIX + '/');
+}
+
+export function getCategory() {
+    return axios.get(PREFIX + '/categories');
 }

@@ -19,11 +19,11 @@
                 <span>{{ state.detail.createTime }}</span>
             </div>
             <van-button v-if="state.detail.orderStatus === 3"
-                        style="margin-bottom: 10px" color="#1baeae"
+                        style="margin-bottom: 10px" color="#00b4ff"
                         block
                         @click="handleConfirmOrder(state.detail.orderNo)">确认收货</van-button>
             <van-button v-if="state.detail.orderStatus === 0"
-                        style="margin-bottom: 10px" color="#1baeae"
+                        style="margin-bottom: 10px" color="#00b4ff"
                         block
                         @click="showPayFn">去支付</van-button>
             <van-button v-if="!(state.detail.orderStatus < 0 || state.detail.orderStatus === 4)"

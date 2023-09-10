@@ -4,14 +4,16 @@
  */
 import axios from "@/common/js/axios"
 
-export function getDetail(id) {
-    return axios.get(`/goods/detail/${id}`);
-}
+const PREFIX = '/goods'
 
-export function getCategory() {
-    return axios.get('/categories');
+export function getDetail(id) {
+    return axios.get(PREFIX + `/detail/${id}`);
 }
 
 export function search(params) {
-    return axios.get('/search', { params });
+    return axios.get(PREFIX + '/search', { params });
+}
+
+export function getSuggestion(params) {
+    return axios.get(PREFIX + '/suggestion', { params });
 }

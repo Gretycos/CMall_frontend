@@ -5,7 +5,7 @@
 <template>
     <div class="product-list-wrap">
         <div class="product-list-content">
-            <header class="category-header wrap">
+            <header class="search-header wrap">
                 <i @click="goBack">
                     <van-icon name="revoke" />
                 </i>
@@ -13,17 +13,25 @@
                     <i class="icon-search">
                         <van-icon name="search" />
                     </i>
-                    <input type="text" class="search-title" v-model="state.keyword"/>
+                    <input class="search-input" v-model="state.keyword" @input="onInputChange"/>
+                    <van-button class="search-btn" @click="getSearch">搜索</van-button>
                 </div>
-                <span class="search-btn" @click="getSearch">搜索</span>
             </header>
-            <van-tabs type="card" color="#1baeae" @click-tab="changeTab" >
+        </div>
+        <div class="content" v-if="state.suggestionList.length >0">
+            <van-list
+                v-model:loading="state.suggestionLoading"
+                :finished="state.suggestionFinished"
+                @load="onSuggestionLoad">
+                <van-cell :clickable="true" v-for="item in state.suggestionList" :key="item" :title="item" @click="onSuggestionClick(item)" />
+            </van-list>
+        </div>
+        <div class="content" v-else>
+            <van-tabs type="card" color="#00b4ff" @click-tab="changeTab">
                 <van-tab title="推荐" name=""></van-tab>
                 <van-tab title="新品" name="new"></van-tab>
                 <van-tab title="价格" name="price"></van-tab>
             </van-tabs>
-        </div>
-        <div class="content">
             <van-pull-refresh :v-model="state.refreshing" @refresh="onRefresh" class="product-list-refresh">
                 <van-list
                         v-model:loading="state.loading"
@@ -53,7 +61,7 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { search } from '@/service/goods'
+import {getSuggestion, search} from '@/service/goods'
 import {prefix} from "@/common/js/utils.js";
 const route = useRoute()
 const router = useRouter()
@@ -68,7 +76,10 @@ const state = reactive({
     productList: [],
     totalPage: 0,
     page: 1,
-    orderBy: ''
+    orderBy: '',
+    suggestionList: [],
+    suggestionLoading: false,
+    suggestionFinished: true
 })
 const init = async () => {
     const { categoryId } = route.query
@@ -107,6 +118,28 @@ const onLoad = () => {
     }
     init()
 }
+const onInputChange = () => {
+    onSuggestionLoad()
+}
+const onSuggestionLoad = async () => {
+    if (state.keyword !== ""){
+        state.suggestionLoading = true
+        state.suggestionFinished = false
+        const params = {
+            key: state.keyword
+        }
+        const {data} = await getSuggestion(params)
+        state.suggestionList = data
+        state.suggestionLoading = false
+        state.suggestionFinished = true
+    }
+
+}
+
+const onSuggestionClick = (item) => {
+    state.keyword = item
+    state.suggestionList = []
+}
 
 const onRefresh = () => {
     state.refreshing = true
@@ -132,7 +165,7 @@ const changeTab = ({ name }) => {
   width: 100%;
   z-index: 1000;
   background: #fff;
-  .category-header {
+  .search-header {
     .fj();
     width: 100%;
     height: 50px;
@@ -149,47 +182,49 @@ const changeTab = ({ name }) => {
       font-size: 25px;
       font-weight: bold;
     }
-    .header-search {
-      display: flex;
-      width: 76%;
-      line-height: 20px;
-      margin: 10px 0;
-      padding: 5px 0;
-      color: #232326;
-      background: #F7F7F7;
-      align-items: center;
-      .borderRadius(20px);
-      .icon-search {
-        padding: 0 5px 0 20px;
-        font-size: 17px;
+      .header-search {
+          .fj();
+          width: 95%;
+          line-height: 20px;
+          margin: 10px 0;
+          padding: 5px 0;
+          color: #232326;
+          background: #F7F7F7;
+          align-items: center;
+          .borderRadius(20px);
+          .icon-search {
+              padding: 0 5px 0 20px;
+              font-size: 17px;
+          }
+          .search-input {
+              width: 100%;
+              height: 30px;
+              font-size: 12px;
+              color: #666;
+              background: #F7F7F7;
+          }
+          .search-btn {
+              width: 10%;
+              height: 30px;
+              color: #fff;
+              font-size: 12px;
+              background: @primary;
+              .borderRadius(20px);
+          }
       }
-      .search-title {
-        font-size: 12px;
-        color: #666;
-        background: #F7F7F7;
+      .icon-More {
+          font-size: 20px;
       }
-    }
-    .icon-More {
-      font-size: 20px;
-    }
-    .search-btn {
-      height: 28px;
-      margin: 8px 0;
-      line-height: 28px;
-      padding: 0 5px;
-      color: #fff;
-      background: @primary;
-      .borderRadius(5px);
-      margin-top: 10px;
-    }
+
   }
 }
 .content {
   height: calc(~"(100vh - 70px)");
   overflow: hidden;
   overflow-y: scroll;
-  margin-top: 78px;
+  margin-top: 1.25rem;
 }
+
 .product-list-refresh {
   .product-item {
     .fj(flex-start);

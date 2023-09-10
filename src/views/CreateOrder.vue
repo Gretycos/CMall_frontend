@@ -91,7 +91,7 @@ import {computed, onMounted, reactive} from 'vue'
 import sHeader from '@/components/SimpleHeader.vue'
 import {getByCartItemIds} from '@/service/cart'
 import {getAddressDetail, getDefaultAddress} from '@/service/address'
-import {createOrder, createSeckillOrder, payOrder} from '@/service/order'
+import {createOrder, getSeckillOrderNo, payOrder} from '@/service/order'
 import {getLocal, removeLocal, setLocal} from '@/common/js/utils'
 import {closeToast, showLoadingToast, showSuccessToast} from 'vant'
 import {useRoute, useRouter} from 'vue-router'
@@ -265,16 +265,24 @@ const handleCreateOrder = async () => {
     } else {
         const exe_params = {
             seckillId: state.seckillId,
-            md5: state.md5
-        }
-        const {data:{seckillSuccessId, md5}} = await executeSeckill(exe_params)
-        const params = {
-            seckillSuccessId: seckillSuccessId,
-            seckillSecretKey: md5,
+            md5: state.md5,
             addressId: state.address.addressId
         }
-        const {data} = await createSeckillOrder(params)
-        state.orderNo = data
+        const {data:{ md5 }} = await executeSeckill(exe_params)
+        const params = {
+            seckillId: state.seckillId,
+            seckillSecretKey: md5,
+        }
+        let obtainedOrderNo = false
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+        do {
+            const {data} = await getSeckillOrderNo(params)
+            if (data !== ""){
+                state.orderNo = data
+                obtainedOrderNo = true
+            }
+            await sleep(2000)
+        }while (!obtainedOrderNo)
     }
     setTimeout(() => {
         closeToast()
@@ -350,7 +358,8 @@ const total = computed(() => {
     display: flex;
     .good-img {
       img {
-        .wh(100px, 100px)
+          object-fit: cover;
+        .wh(100px, 100px);
       }
     }
     .goods-desc {

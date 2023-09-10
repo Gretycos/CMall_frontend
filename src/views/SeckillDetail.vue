@@ -94,7 +94,7 @@ onMounted(async () => {
         const now = new Date().getTime()
         const begin = new Date(state.detail.seckillBegin).getTime()
         const end = new Date(state.detail.seckillEnd).getTime()
-        initCountDown(now, begin, end)
+        await initCountDown(now, begin, end)
     } catch (e) {
         router.go(-1)
     }
@@ -104,12 +104,12 @@ onUnmounted(() => {
     clearInterval(state.checkStockInterval)
 })
 
-const initCountDown = (now, begin, end) => {
-    if (now < begin){
+const initCountDown = async (now, begin, end) => {
+    if (now < begin) {
         state.time = begin - now
         state.disabled = true
         state.buttonText = '尚未开始'
-    } else if (now > end){
+    } else if (now > end) {
         state.time = 0
         state.disabled = true
         state.buttonText = '已结束'
@@ -118,7 +118,15 @@ const initCountDown = (now, begin, end) => {
         state.endTime = end - now
         state.disabled = false
         state.buttonText = '立即秒杀'
-        initCheckStock()
+        try {
+            await checkSeckillStock(state.detail.seckillId)
+            state.disabled = false
+            state.buttonText = '立即秒杀'
+        } catch (e) {
+            state.disabled = true
+            state.buttonText = '已抢光'
+            clearInterval(state.checkStockInterval)
+        }
     }
 }
 
@@ -133,7 +141,7 @@ const initCheckStock = () => {
             state.buttonText = '已抢光'
             clearInterval(state.checkStockInterval)
         }
-    }, 1000)
+    }, 2000)
 }
 
 nextTick(() => {
@@ -158,6 +166,7 @@ const handleEndCountDownFinish = () => {
 
 const handleSeckill = async () => {
     const {data:{seckillStatusEnum, md5, now, start, end} } = await getSeckillExposer(state.detail.seckillId)
+
     if (seckillStatusEnum === 'START'){
         state.disabled = true
         await router.push({
@@ -172,9 +181,9 @@ const handleSeckill = async () => {
         state.buttonText = '已抢光'
     } else {
         state.disabled = true
-        initCountDown(now, start, end)
+        await initCountDown(now, start, end)
     }
-    clearInterval(state.checkStockInterval)
+    // clearInterval(state.checkStockInterval)
 }
 
 </script>

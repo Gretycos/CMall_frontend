@@ -14,6 +14,7 @@ axios.defaults.baseURL = import.meta.env.MODE === 'development' ? '/api' : '/api
 axios.defaults.withCredentials = true
 axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.headers['token'] = getLocal('token') || ''
+axios.defaults.headers['user-id'] = getLocal('user-id') || ''
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 axios.interceptors.response.use(res => {
@@ -34,6 +35,15 @@ axios.interceptors.response.use(res => {
     }
 
     return res.data
+}, rej => {
+    if (rej.response.status === 401){
+        showFailToast("未登录")
+        setTimeout(() => {
+            router.push({ path: '/login' })
+        }, 2000)
+    }
+    console.log(rej.response)
+    return Promise.reject(rej.response.statusText)
 })
 
 export default axios

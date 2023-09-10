@@ -4,26 +4,27 @@
  */
 import axios from "@/common/js/axios"
 
+const PREFIX = '/user'
 export function getUserInfo() {
-    return axios.get('/user/info');
+    return axios.get(PREFIX + '/info');
 }
 
 export function editUserInfo(params) {
-    return axios.put('/user/info', params);
+    return axios.put(PREFIX + '/info', params);
 }
 
 export function editUserPassword(params) {
-    return axios.put('/user/password', params);
+    return axios.put(PREFIX + '/password', params);
 }
 
 export function login(params) {
-    return axios.post('/user/login', params);
+    return axios.post(PREFIX + '/login', params);
 }
 
 export function logout() {
-    return axios.post('/user/logout')
+    return axios.post(PREFIX + '/logout')
 }
 
 export function register(params) {
-    return axios.post('/user/register', params);
+    return axios.post(PREFIX + '/register', params);
 }
